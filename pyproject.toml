@@ -7,7 +7,9 @@ requires-python = ">=3.14"
 dependencies = [
     "appdata>=2.2.1",
     "numpy>=2.5.1",
+    "requests>=2.34.2",
     "xarray>=2026.7.0",
+    "xarray-regrid>=0.4.2",
 ]
 
 

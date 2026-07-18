@@ -1,5 +1,11 @@
+from abc import abstractmethod
+from numbers import Number
+import xarray as xr
+
 from src.தாள் import தாள்
 
 
 class மண்(தாள்):
-    pass
+    @abstractmethod
+    def ஒற்றுமை(தன், நிலநேர்க்கோடு: Number, நிலநிரைக்கொடு: Number) -> xr.DataArray:
+        pass
