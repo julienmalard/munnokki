@@ -25,7 +25,7 @@ class பதிவிறக்கம்:
         return தன்.கோப்பு_பாதை
 
     def பதிவேற்கு(தன்):
-        with requests.get(தன்.பதிவேற்றம்_முகவரி, stream=True) as கோரிக்கை:
+        with requests.get(தன்.பதிவிறக்க_முகவரி, stream=True) as கோரிக்கை:
             with open(தன்.கோப்பு_பாதை, "wb") as கோப்பு:
                 shutil.copyfileobj(கோரிக்கை.raw, கோப்பு)
 
