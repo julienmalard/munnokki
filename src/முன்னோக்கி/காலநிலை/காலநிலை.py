@@ -1,6 +1,6 @@
 from abc import ABC
 
-from src.தாள் import தாள்
+from src.முன்னோக்கி.தாள் import தாள்
 
 
 class காலநிலை(தாள், ABC):

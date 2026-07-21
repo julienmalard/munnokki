@@ -2,7 +2,7 @@ from abc import abstractmethod
 from numbers import Number
 import xarray as xr
 
-from src.தாள் import தாள்
+from src.முன்னோக்கி.தாள் import தாள்
 
 
 class மண்(தாள்):
