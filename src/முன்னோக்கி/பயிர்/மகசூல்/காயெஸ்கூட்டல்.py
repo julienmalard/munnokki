@@ -6,11 +6,15 @@ from .. import பயிர்_பெயர்கள் as பெயர்கள
 
 
 class காயெஸ்கூட்டல்(மகசூல்):
-    def __init__(தன், பதிவிறக்கம்_முகவரி="https://rserve.dataverse.harvard.edu/cgi-bin/zipdownload?cdb-6c17e3091723"):
+    def __init__(
+        தன்,
+        பதிவிறக்கம்_முகவரி="https://rserve.dataverse.harvard.edu/cgi-bin/zipdownload?cdb-6c17e3091723",
+    ):
         தன்.பதிவிறக்கம்_முகவரி = பதிவிறக்கம்_முகவரி
 
     @staticmethod
     def உள்_கோப்பு_பெயர்(பயிர்_பெயர்: str, நீர்காசனம்: bool):
+        # மேலாண்மை = Irrigated, Rainfed, Total அல்லது Mean
         return f"GAEZAct2015_Yield_{காயெஸ்கூட்டல்_பெயர்(பயிர்_பெயர்)}_{'Irrigated' if நீர்காசனம் else 'Rainfed'}"
 
 

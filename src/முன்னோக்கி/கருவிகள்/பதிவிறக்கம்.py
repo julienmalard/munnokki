@@ -3,6 +3,7 @@ import shutil
 from zipfile import ZipFile
 
 import requests
+import xarray as xr
 from appdata import AppDataPaths
 
 
@@ -19,10 +20,10 @@ class பதிவிறக்கம்:
     def கோப்பு_பாதை(தன்) -> str:
         return os.path.join(தன்.செயலி_பாதைகள்.app_data_path, தன்.பெயர்)
 
-    def பெறு(தன்) -> str:
+    def பெறு(தன்) -> xr.Dataset:
         if not os.path.isfile(தன்.கோப்பு_பாதை):
             தன்.பதிவேற்கு()
-        return தன்.கோப்பு_பாதை
+        return xr.open_dataset(தன்.கோப்பு_பாதை, chunks="auto")
 
     def பதிவேற்கு(தன்):
         with requests.get(தன்.பதிவிறக்க_முகவரி, stream=True) as கோரிக்கை:

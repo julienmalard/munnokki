@@ -8,7 +8,6 @@ from ..தாள் import தாள்
 
 
 class நீர்பாசனம்(தாள், ABC):
-
     def __init__(தன்):
         pass
 
