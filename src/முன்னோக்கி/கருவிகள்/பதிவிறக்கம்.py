@@ -1,5 +1,6 @@
 import os.path
 import shutil
+from typing import Optional
 from zipfile import ZipFile
 
 import requests
@@ -8,8 +9,10 @@ from appdata import AppDataPaths
 
 
 class பதிவிறக்கம்:
-    def __init__(தன், பெயர்: str, பதிவிறக்க_முகவரி: str, செயலி_பெயர்="முன்னோக்கி"):
-        தன்.பெயர் = பெயர்
+    def __init__(
+        தன், பதிவிறக்க_முகவரி: str, பெயர்: Optional[str] = None, செயலி_பெயர்="முன்னோக்கி"
+    ):
+        தன்.பெயர் = பெயர் or os.path.basename(பதிவிறக்க_முகவரி)
         தன்.பதிவிறக்க_முகவரி = பதிவிறக்க_முகவரி
         தன்.செயலி_பெயர் = செயலி_பெயர்
 

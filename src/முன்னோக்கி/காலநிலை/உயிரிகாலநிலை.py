@@ -1,77 +1,85 @@
-from numbers import Number
-from typing import Literal, Iterable
+from typing import Literal, Iterable, List, Tuple
 
 import xarray as xr
 
+from .காலநிலை import காலநிலை_குறிப்பு
+from ...முன்னோக்கி.காலநிலை.காலநிலை import காலநிலை
 from ...முன்னோக்கி.கருவிகள்.பதிவிறக்கம் import பதிவிறக்கம், ஜிப்_பதிவிறக்கம்
-from ...முன்னோக்கி import காலநிலை
-from .. import அச்சுகள்
 
-கிடைக்கும்_மாதிரிகள் = Literal[
-    "ACCESS-CM2",
-    "BCC-CSM2-MR",
-    "CMCC-ESM2",
-    "EC-Earth3-Veg",
-    "FIO-ESM-2-0",
-    "GFDL-ESM4",
-    "GISS-E2-1-G",
-    "HadGEM3-GC31-LL",
-    "INM-CM5-0",
-    "IPSL-CM6A-LR",
-    "MIROC6",
-    "MPI-ESM1-2-HR",
-    "MRI-ESM2-0	tn",
-    "UKESM1-0-LL",
-]
 
-காலநிலைக்காட்சிகள் = Literal["ssp126", "ssp245", "ssp370", "ssp585"]
 கிடைக்கும்_துல்லியங்கள் = Literal["30s", "2.5m", "5m", "10m"]
-இடைவெளிகள் = [(2021, 2040), (2041, 2060), (2061, 2080), (2081, 2100)]
-
-
-class காலநிலை_குறிப்பு:
-    def __init__(
-        தன்,
-        ஆண்டு: int or float,
-        காலநிலைக்காட்சி: காலநிலைக்காட்சிகள் = "ssp585",
-        மாதிரி: கிடைக்கும்_மாதிரிகள் or Iterable[கிடைக்கும்_மாதிரிகள்] = கிடைக்கும்_மாதிரிகள்,
-    ):
-        தன்.காலநிலைக்காட்சி = காலநிலைக்காட்சி
-        தன்.மாதிரி = மாதிரி if isinstance(மாதிரி, str) else [மாதிரி]
-        தன்.ஆண்டு = ஆண்டு
 
 
 class உயிரிகாலநிலை(காலநிலை):
+    """https://www.worldclim.org/data/bioclim.html"""
+
     def __init__(
         தன்,
         துல்லியம்: கிடைக்கும்_துல்லியங்கள் = "30s",
     ):
         தன்.துல்லியம் = துல்லியம்
 
-    def ஒற்றுமை(
-        தன், காலநிலை: காலநிலை_குறிப்பு, நிலநேர்க்கோடு: Number, நிலநிரைக்கொடு: Number
-    ) -> xr.DataArray:
-        # மூல் சூழ்திலையில் வேண்டிய இடத்தைப் பெறு
-        மூல்_காலநிலை_குறிப்பு = தன்.வறலாற்று_தகவள்களைப்_பெறு()
+    @property
+    def மாதிரிகள்(தன்) -> List[str]:
+        return [
+            "ACCESS-CM2",
+            "BCC-CSM2-MR",
+            "CMCC-ESM2",
+            "EC-Earth3-Veg",
+            "FIO-ESM-2-0",
+            "GFDL-ESM4",
+            "GISS-E2-1-G",
+            "HadGEM3-GC31-LL",
+            "INM-CM5-0",
+            "IPSL-CM6A-LR",
+            "MIROC6",
+            "MPI-ESM1-2-HR",
+            "MRI-ESM2-0	tn",
+            "UKESM1-0-LL",
+        ]
 
-        # இலக்கு சூழ்நிலையில் ஒற்றுமையைக் கணக்கிடு
-        mu = இலக்கு_மாறிகள்.mean([அச்சுகள்.அகலாங்கு, அச்சுகள்.நெட்டாங்கு])
-        sigma = இலக்கு_மாறிகள்.std([அச்சுகள்.அகலாங்கு, அச்சுகள்.நெட்டாங்கு])
-        cible_normalisée = (இலக்கு_மாறிகள் - mu) / sigma
-        origine_normalisée = (மூல்_காலநிலை_குறிப்பு - mu) / sigma
+    @property
+    def காட்சிகள்(தன்) -> List[str]:
+        return ["ssp126", "ssp245", "ssp370", "ssp585"]
 
-        return distance(origine_normalisée, cible_normalisée)
+    @property
+    def ஆதறிக்கப்பட்ட_ஆண்டுகள்(தன்) -> Tuple[int, int]:
+        return 2021, 2100
+
+    @property
+    def மாறிகள்(தன்) -> List[str]:
+        return [
+            "BIO1",
+            "BIO2",
+            "BIO3",
+            "BIO4",
+            "BIO5",
+            "BIO6",
+            "BIO7",
+            "BIO8",
+            "BIO9",
+            "BIO10",
+            "BIO11",
+            "BIO12",
+            "BIO13",
+            "BIO14",
+            "BIO15",
+            "BIO16",
+            "BIO17",
+            "BIO18",
+            "BIO19",
+        ]
+
+    def தரவுகளைப்_பெறு(தன், குறிப்பு: காலநிலை_குறிப்பு) -> xr.DataArray:
+        return xr.merge(
+            பதிவிறக்கம்(பெயர், பதிவிறக்க_முகவரி=முகவரி).பெறு()
+            for முகவரி in தன்.பதிவிறக்க_முகவரியைப்_பெறு()
+        )
 
     def வறலாற்று_தகவள்களைப்_பெறு(தன்) -> xr.Dataset:
         முகவரி = f"https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_{தன்.துல்லியம்}_bio.zip"
         ப = ஜிப்_பதிவிறக்கம்(பெயர், பதிவிறக்க_முகவரி=முகவரி)
         return ப.பெறு()
-
-    def தகவள்களைப்_பெறு(தன்):
-        return xr.merge(
-            பதிவிறக்கம்(பெயர், பதிவிறக்க_முகவரி=முகவரி).பெறு()
-            for முகவரி in தன்.பதிவிறக்க_முகவரியைப்_பெறு()
-        )
 
     def பதிவிறக்க_முகவரியைப்_பெறு(தன்) -> Iterable[str]:
         try:
