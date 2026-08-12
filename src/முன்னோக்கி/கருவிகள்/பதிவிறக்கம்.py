@@ -4,13 +4,14 @@ from typing import Optional
 from zipfile import ZipFile
 
 import requests
+import rioxarray as _
 import xarray as xr
 from appdata import AppDataPaths
 
 
 class பதிவிறக்கம்:
     def __init__(
-        தன், பதிவிறக்க_முகவரி: str, பெயர்: Optional[str] = None, செயலி_பெயர்="முன்னோக்கி"
+            தன், பதிவிறக்க_முகவரி: str, பெயர்: Optional[str] = None, செயலி_பெயர்="முன்னோக்கி"
     ):
         தன்.பெயர் = பெயர் or os.path.basename(பதிவிறக்க_முகவரி)
         தன்.பதிவிறக்க_முகவரி = பதிவிறக்க_முகவரி
@@ -23,10 +24,16 @@ class பதிவிறக்கம்:
     def கோப்பு_பாதை(தன்) -> str:
         return os.path.join(தன்.செயலி_பாதைகள்.app_data_path, தன்.பெயர்)
 
-    def பெறு(தன்) -> xr.Dataset:
+    def பெறு(தன்) -> xr.DataArray:
         if not os.path.isfile(தன்.கோப்பு_பாதை):
             தன்.பதிவேற்கு()
-        return xr.open_dataset(தன்.கோப்பு_பாதை, chunks="auto")
+        நீட்டி = os.path.splitext(தன்.கோப்பு_பாதை)[1]
+        if நீட்டி == ".tif":
+            # import rioxarray
+            _
+            return xr.open_dataarray(தன்.கோப்பு_பாதை, chunks="auto", engine="rasterio")
+
+        return xr.open_dataarray(தன்.கோப்பு_பாதை, chunks="auto")
 
     def பதிவேற்கு(தன்):
         with requests.get(தன்.பதிவிறக்க_முகவரி, stream=True) as கோரிக்கை:

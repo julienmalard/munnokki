@@ -3,14 +3,13 @@ from typing import Optional
 
 import xarray as xr
 
-from src.முன்னோக்கி import அச்சுகள்
-from src.முன்னோக்கி.கருவிகள்.பதிவிறக்கம் import ஜிப்_பதிவிறக்கம்
-from src.முன்னோக்கி.பயிர்.பரப்பளவு import பயிர்
+from . import பயிர்_பரப்பளவு
 from .. import பயிர்_பெயர்கள் as பெயர்கள்
 from ...அச்சுகள் import நெட்டாங்கு_அச்சு, அகலாங்கு_அச்சு
+from ...கருவிகள்.பதிவிறக்கம் import ஜிப்_பதிவிறக்கம்
 
 
-class பயிர்கட்டம்(பயிர்):
+class பயிர்கட்டம்(பயிர்_பரப்பளவு):
     def __init__(
         தன்,
         தரவு_திறன்=0,
