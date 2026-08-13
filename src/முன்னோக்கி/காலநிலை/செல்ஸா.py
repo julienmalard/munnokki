@@ -51,12 +51,6 @@ class செல்ஸா_உயிரிகாலநிலை(காலநில
             "gsl",
             "gsp",
             "gst",
-            # "kg0",
-            # "kg1",
-            # "kg2",
-            # "kg3",
-            # "kg4",
-            # "kg5",
             "lgd",
             "ngd0",
             "ngd5",
@@ -126,3 +120,20 @@ class செல்ஸா_உயிரிகாலநிலை(காலநில
             f"https://os.zhdk.cloud.switch.ch/chelsav2/GLOBAL/climatologies/"
             f"{ஆண்டுகள்}/{மாதிரி}/{காட்சி}/bio/CHELSA_{மாறி}_{ஆண்டுகள்}_{மாதிரி.lower()}_{காட்சி}_V.2.1.tif"
         )
+
+
+class செல்ஸா_காலநிலை_வகைகள்(செல்ஸா_உயிரிகாலநிலை):
+    def __init__(தன், மாறிகள்: Optional[list[str]] = None):
+        super().__init__(மாறிகள்=மாறிகள் or [
+            "kg0",
+            "kg1",
+            "kg2",
+            "kg3",
+            "kg4",
+            "kg5",
+        ])
+
+    def தொலைவு(
+        தன், இலக்கு_மாறிகள்: xr.DataArray, மூல்_காலநிலை_குறிப்பு: xr.DataArray
+    ) -> xr.DataArray:
+        return (மூல்_காலநிலை_குறிப்பு == இலக்கு_மாறிகள்).all(dim=காலநிலை_மாறி_அச்சு)
