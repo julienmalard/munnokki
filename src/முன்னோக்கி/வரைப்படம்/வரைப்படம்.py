@@ -12,6 +12,7 @@ def வரையு(ஒப்புமை: xr.DataArray, அச்சு=None) -
     crs = ccrs.PlateCarree()
 
     if அச்சு is None:
+        # noinspection PyTypeChecker
         படம் = plt.figure(figsize=(16, 9), dpi=150)
         அச்சு = plt.axes(projection=projection, frameon=True)
 
