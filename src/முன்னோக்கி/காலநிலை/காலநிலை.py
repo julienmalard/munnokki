@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 from numbers import Number
-from typing import Tuple, Optional, List
+from typing import Optional, Iterable
+
 from xarray_regrid import Grid
 
 import xarray as xr
 
-from .படிமுறைகள் import யூக்ளிடிய, மஹனலோபிஸ்
+from முன்னோக்கி.கருவிகள்.படிமுறைகள் import மஹனலோபிஸ்
 from .பிழைகள் import (
     ஆதறிக்கப்பட்டாத_ஆண்டு_பிழை,
     ஆதறிக்கப்பட்டாத_காலநிலைக்காட்சி_பிழை,
@@ -21,48 +22,51 @@ class காலநிலை_குறிப்பு:
         தன்,
         ஆண்டு: int | float,
         காலநிலைக்காட்சி="ssp585",
-        மாதிரி: Optional[str | List[str]] = None,
+        மாதிரிகள்: Optional[str | Iterable[str]] = None,
     ):
         தன்.ஆண்டு = int(ஆண்டு)
         தன்.காலநிலைக்காட்சி = காலநிலைக்காட்சி
-        தன்.மாதிரி = [மாதிரி] if isinstance(மாதிரி, str) else மாதிரி
+        தன்.மாதிரிகள் = (
+            None
+            if மாதிரிகள் is None
+            else set([மாதிரிகள்] if isinstance(மாதிரிகள், str) else மாதிரிகள்)
+        )
 
 
 class சரிபார்த்த_காலநிலை_குறிப்பு(காலநிலை_குறிப்பு):
-    மாதிரி: List[str]
+    மாதிரிகள்: set[str]
 
     def __init__(
         தன்,
         ஆண்டு: int | float,
         காலநிலைக்காட்சி: str,
-        மாதிரிகள்: List[str],
+        மாதிரிகள்: set[str],
     ):
-        super().__init__(ஆண்டு=ஆண்டு, காலநிலைக்காட்சி=காலநிலைக்காட்சி, மாதிரி=மாதிரிகள்)
+        super().__init__(ஆண்டு=ஆண்டு, காலநிலைக்காட்சி=காலநிலைக்காட்சி, மாதிரிகள்=மாதிரிகள்)
 
 
+# https://github.com/CIAT-DAPA/analogues/blob/master/R/createParameters.R
 class காலநிலை(தாள், ABC):
-    """
-    https://github.com/CIAT-DAPA/analogues/blob/master/R/createParameters.R
-    """
+    """ """
 
     @property
     @abstractmethod
-    def மாதிரிகள்(தன்) -> List[str]:
+    def மாதிரிகள்(தன்) -> set[str]:
         pass
 
     @property
     @abstractmethod
-    def காட்சிகள்(தன்) -> List[str]:
+    def காட்சிகள்(தன்) -> set[str]:
         pass
 
     @property
     @abstractmethod
-    def ஆதறிக்கப்பட்ட_ஆண்டுகள்(தன்) -> Tuple[int, int]:
+    def ஆதறிக்கப்பட்ட_ஆண்டுகள்(தன்) -> tuple[int, int]:
         pass
 
     @property
     @abstractmethod
-    def மாறிகள்(தன்) -> List[str]:
+    def மாறிகள்(தன்) -> set[str]:
         pass
 
     @abstractmethod
@@ -72,11 +76,11 @@ class காலநிலை(தாள், ABC):
     def காலநிலை_குறிப்பு_சரிபார்த்தல்(தன், குறிப்பு: காலநிலை_குறிப்பு) -> சரிபார்த்த_காலநிலை_குறிப்பு:
         ஆண்டு = குறிப்பு.ஆண்டு
         காலநிலைக்காட்சி = குறிப்பு.காலநிலைக்காட்சி
-        மாதிரிகள் = குறிப்பு.மாதிரி or தன்.மாதிரிகள்
+        மாதிரிகள் = குறிப்பு.மாதிரிகள் or தன்.மாதிரிகள்
 
         if காலநிலைக்காட்சி == வறலாற்று_காட்சி:
             return சரிபார்த்த_காலநிலை_குறிப்பு(
-                ஆண்டு=ஆண்டு, காலநிலைக்காட்சி=காலநிலைக்காட்சி, மாதிரிகள்=[]
+                ஆண்டு=ஆண்டு, காலநிலைக்காட்சி=காலநிலைக்காட்சி, மாதிரிகள்=தன்.மாதிரிகள்
             )
 
         if not தன்.ஆதறிக்கப்பட்ட_ஆண்டுகள்[0] < ஆண்டு < தன்.ஆதறிக்கப்பட்ட_ஆண்டுகள்[1]:
