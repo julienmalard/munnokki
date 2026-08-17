@@ -30,11 +30,10 @@ class உலகெங்கும்_பயிர்_மகசூல்_௫_ம�
                 ஜிப்_பதிவிறக்கம்(
                     பெயர்=தன்.உள்_கோப்பு_பெயர்(பயிர்), பதிவிறக்க_முகவரி=தன்.பதிவிறக்க_முகவரி
                 )
-                .பெறு()["band_data"].squeeze("band").drop_vars(["band", "spatial_ref"])
-                .rename({
-                    "x": நெட்டாங்கு_அச்சு,
-                    "y": அகலாங்கு_அச்சு
-                })
+                .பெறு()["band_data"]
+                .squeeze("band")
+                .drop_vars(["band", "spatial_ref"])
+                .rename({"x": நெட்டாங்கு_அச்சு, "y": அகலாங்கு_அச்சு})
             )
         else:
             return xr.DataArray(np.nan)
