@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import xarray as xr
 
@@ -50,4 +52,4 @@ class உலகெங்கும்_பயிர்_மகசூல்_௫_ம�
 
     def உள்_கோப்பு_பெயர்(தன், பயிர்: str) -> str:
         ஆவணத்தில்_பயிர்_பெயர் = தன்.பெயர்_சமானம்[பயிர்]
-        return f"GlobalCropYield5min/{ஆவணத்தில்_பயிர்_பெயர்}/{ஆவணத்தில்_பயிர்_பெயர்}2015.tif"
+        return os.path.join("GlobalCropYield5min", "ஆவணத்தில்_பயிர்_பெயர்", f"{ஆவணத்தில்_பயிர்_பெயர்}2015.tif")

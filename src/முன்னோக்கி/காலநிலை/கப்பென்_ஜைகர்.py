@@ -1,3 +1,4 @@
+import os
 from logging import warning
 from typing import Literal, Optional
 
@@ -128,14 +129,14 @@ class கப்பென்_ஜைகர்(காலநிலை):
     def உள்_கோப்பு_பாதை(தன், ஆண்டு: int, காட்சி: str) -> str:
         துல்லிய_குறிப்பு = தன்.துல்லியம்.replace(".", "p")
         if காட்சி == வறலாற்று_காட்சி:
-            return f"1991_2020/koppen_geiger_{துல்லிய_குறிப்பு}.nc"
+            return os.path.join("1991_2020", f"koppen_geiger_{துல்லிய_குறிப்பு}.nc")
 
         ஆண்டு_இடைவெளிகள் = [(2041, 2070), (2071, 2099)]
         ஆண்டு_குறிப்பு = "_".join(
             next(str(ஆ) for ஆ in ஆண்டு_இடைவெளிகள் if ஆ[0] <= ஆண்டு <= ஆ[1])
         )
 
-        return f"{ஆண்டு_குறிப்பு}/{காட்சி}/koppen_geiger_{துல்லிய_குறிப்பு}.nc"
+        return os.path.join(ஆண்டு_குறிப்பு, காட்சி, f"koppen_geiger_{துல்லிய_குறிப்பு}.nc")
 
     def வடிக்க(தன், தரவுகள்: xr.Dataset) -> xr.Dataset:
         தரவுகள்["kg_class"] = xr.where(
