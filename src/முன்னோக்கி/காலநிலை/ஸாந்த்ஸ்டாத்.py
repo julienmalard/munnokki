@@ -123,11 +123,10 @@ class ஸாந்த்ஸ்டாத்(காலநிலை):
                     மாதிரி in ["CNRM-CM6-1-HR", "HadGEM3-GC31-MM"]
                     and காலநிலைக்காட்சி in ["ssp245", "ssp370"]
                 )
+                or (மாதிரி == "GFDL-CM4" and காலநிலைக்காட்சி in ["ssp126", "ssp370"])
                 or (
-                    மாதிரி == "GFDL-CM4"
-                    and காலநிலைக்காட்சி in ["ssp126", "ssp370"]
-                ) or (
-                    மாதிரி in ["HadGEM3-GC31-LL", "KIOST-ESM", "NESM3"] and காலநிலைக்காட்சி == "ssp370"
+                    மாதிரி in ["HadGEM3-GC31-LL", "KIOST-ESM", "NESM3"]
+                    and காலநிலைக்காட்சி == "ssp370"
                 )
             )
         }
@@ -182,10 +181,21 @@ class ஸாந்த்ஸ்டாத்(காலநிலை):
             )
             மூல்_பாதை = str(os.path.splitext(கோப்பு_பாதை)[0])
             for மாறி in தன்.மாறிகள்:
-                மாறி_கோப்பு_பாதை = next((os.path.join(மூல்_பாதை, கோப்பு) for கோப்பு in os.listdir(மூல்_பாதை) if கோப்பு.startswith(f"{மாறி.lower()}ETCCDI")), None)
+                மாறி_கோப்பு_பாதை = next(
+                    (
+                        os.path.join(மூல்_பாதை, கோப்பு)
+                        for கோப்பு in os.listdir(மூல்_பாதை)
+                        if கோப்பு.startswith(f"{மாறி.lower()}ETCCDI")
+                    ),
+                    None,
+                )
                 if not மாறி_கோப்பு_பாதை:
                     with ZipFile(கோப்பு_பாதை, "r") as ஜிப்:
-                        பெயர் = next(பெயர் for பெயர் in ஜிப்.namelist() if பெயர்.startswith(f"{மாறி.lower()}ETCCDI"))
+                        பெயர் = next(
+                            பெயர்
+                            for பெயர் in ஜிப்.namelist()
+                            if பெயர்.startswith(f"{மாறி.lower()}ETCCDI")
+                        )
                         மாறி_கோப்பு_பாதை = os.path.join(மூல்_பாதை, பெயர்)
                         ஜிப்.extract(பெயர், மாறி_கோப்பு_பாதை)
 
