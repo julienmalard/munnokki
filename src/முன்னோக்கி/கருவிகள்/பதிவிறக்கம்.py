@@ -1,5 +1,6 @@
 import os.path
 import shutil
+from tempfile import NamedTemporaryFile
 from typing import Optional
 from zipfile import ZipFile
 
@@ -13,6 +14,9 @@ class இயல்பு_தரவு_பாதை:
     def __init__(தன், செயலி_பெயர்: str):
         தன்.செயலி_பாதைகள் = AppDataPaths(செயலி_பெயர்)
         தன்.செயலி_பாதைகள்.setup()
+
+    def நீக்கு(தன்):
+        shutil.rmtree(str(தன்))
 
     def __str__(தன்):
         பாதை = os.path.join(தன்.செயலி_பாதைகள்.app_data_path, "தரவுகள்")
@@ -30,31 +34,39 @@ class பதிவிறக்கம்:
         தன்.பதிவிறக்க_முகவரி = பதிவிறக்க_முகவரி
         தன்.தரவு_கோப்புரை = தரவு_கோப்புரை
 
-    def தரவு_அணியைப்_பெறு(தன்) -> xr.DataArray:
-        raise NotImplementedError
-
-    def தரவுத்தளத்தைப்_பெறு(தன்) -> xr.Dataset:
-        raise NotImplementedError
-
     @property
     def கோப்பு_பாதை(தன்) -> str:
-        return os.path.join(தன்.செயலி_பாதைகள்.app_data_path, தன்.பெயர்)
-
-    def பெறு(தன்) -> xr.DataArray:
-        if not os.path.isfile(தன்.கோப்பு_பாதை):
-            தன்.பதிவேற்கு()
-        நீட்டி = os.path.splitext(தன்.கோப்பு_பாதை)[1]
-        if நீட்டி == ".tif":
-            # import rioxarray
-            _
-            return xr.open_dataarray(தன்.கோப்பு_பாதை, chunks="auto", engine="rasterio")
-
-        return xr.open_dataarray(தன்.கோப்பு_பாதை, chunks="auto")
+        return os.path.join(தன்.தரவு_கோப்புரை, தன்.பெயர்)
 
     def பதிவேற்கு(தன்):
-        with requests.get(தன்.பதிவிறக்க_முகவரி, stream=True) as கோரிக்கை:
-            with open(தன்.கோப்பு_பாதை, "wb") as கோப்பு:
-                shutil.copyfileobj(கோரிக்கை.raw, கோப்பு)
+        if not os.path.isfile(தன்.கோப்பு_பாதை):
+            with NamedTemporaryFile() as தற்காலிகமானது:
+                with requests.get(தன்.பதிவிறக்க_முகவரி, stream=True) as கோரிக்கை:
+                    கோரிக்கை.raise_for_status()
+
+                    for chunk in கோரிக்கை.iter_content():
+                        if chunk:
+                            தற்காலிகமானது.write(chunk)
+
+                shutil.move(தற்காலிகமானது.name, தன்.கோப்பு_பாதை)
+
+        return தன்.கோப்பு_பாதை
+
+    def தரவு_அணியைப்_பெறு(தன்) -> xr.DataArray:
+        _
+        தன்.பதிவேற்கு()
+        நீட்டி = os.path.splitext(தன்.கோப்பு_பாதை)[1]
+        return xr.open_dataarray(
+            தன்.கோப்பு_பாதை, chunks="auto", engine="rasterio" if நீட்டி == ".tif" else None
+        )
+
+    def தரவுத்தளத்தைப்_பெறு(தன்) -> xr.Dataset:
+        _
+        தன்.பதிவேற்கு()
+        நீட்டி = os.path.splitext(தன்.கோப்பு_பாதை)[1]
+        return xr.open_dataset(
+            தன்.கோப்பு_பாதை, chunks="auto", engine="rasterio" if நீட்டி == ".tif" else None
+        )
 
     def நீக்கு(தன்):
         if os.path.exists(தன்.கோப்பு_பாதை):
@@ -62,22 +74,51 @@ class பதிவிறக்கம்:
 
 
 class ஜிப்_பதிவிறக்கம்(பதிவிறக்கம்):
-    def __init__(தன், பெயர்: str, பதிவிறக்க_முகவரி: str, தரவு_கோப்புரை: str):
-        பெயர், தன்.உள்_கோப்பு_பெயர் = பெயர்.split("/", 1)
+    def __init__(
+        தன்,
+        உள்_கோப்பு_பாதை: str,
+        பதிவிறக்க_முகவரி: str,
+        தரவு_கோப்புரை: str,
+        பெயர்: Optional[str] = None,
+    ):
+        தன்.உள்_கோப்பு_பாதை = உள்_கோப்பு_பாதை
 
         super().__init__(
             பெயர்=பெயர், பதிவிறக்க_முகவரி=பதிவிறக்க_முகவரி, தரவு_கோப்புரை=தரவு_கோப்புரை
         )
 
-    def __enter__(தன்):
-        தன்.பெறு()
-        தன்.ஜிப் = ZipFile(தன்.கோப்பு_பாதை, "r")
-        தன்.ஜிப்.__enter__()
-        தன்.ஜிப்பில்_கோப்பு = தன்.ஜிப்.open(தன்.உள்_கோப்பு_பெயர்)
-        தன்.ஜிப்பில்_கோப்பு.__enter__()
+    @property
+    def கோப்பு_பாதை(தன்) -> str:
+        return os.path.join(தன்.தரவு_கோப்புரை, தன்.பெயர், தன்.உள்_கோப்பு_பாதை)
 
-    def __exit__(தன், exc_type, exc_val, exc_tb):
-        தன்.ஜிப்பில்_கோப்பு.__exit__(exc_type, exc_val, exc_tb)
-        தன்.ஜிப்.__exit__(exc_type, exc_val, exc_tb)
-        தன்.ஜிப் = None
-        தன்.ஜிப்பில்_கோப்பு = None
+    @property
+    def ஜிப்_பாதை(தன்) -> str:
+        return os.path.join(தன்.தரவு_கோப்புரை, தன்.பெயர்)
+
+    @property
+    def கோப்புரை_பாதை(தன்) -> str:
+        return os.path.join(தன்.தரவு_கோப்புரை, os.path.splitext(தன்.பெயர்)[0])
+
+    def பதிவேற்கு(தன்):
+        if not os.path.isfile(தன்.கோப்பு_பாதை):
+            if not os.path.isfile(தன்.ஜிப்_பாதை):
+                with NamedTemporaryFile() as தற்காலிகமானது:
+                    with requests.get(தன்.பதிவிறக்க_முகவரி, stream=True) as கோரிக்கை:
+                        கோரிக்கை.raise_for_status()
+
+                        for chunk in கோரிக்கை.iter_content():
+                            if chunk:
+                                தற்காலிகமானது.write(chunk)
+
+                    shutil.move(தற்காலிகமானது.name, தன்.ஜிப்_பாதை)
+            with ZipFile(தன்.ஜிப்_பாதை) as ஜிப்:
+                ஜிப்.extractall(தன்.கோப்புரை_பாதை)
+
+        return தன்.கோப்பு_பாதை
+
+    def நீக்கு(தன்):
+        if os.path.exists(தன்.கோப்புரை_பாதை):
+            shutil.rmtree(தன்.கோப்புரை_பாதை)
+
+        if os.path.exists(தன்.ஜிப்_பாதை):
+            os.remove(தன்.ஜிப்_பாதை)

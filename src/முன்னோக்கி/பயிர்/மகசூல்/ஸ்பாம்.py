@@ -13,9 +13,11 @@ class ஸ்பாம்(மகசூல்):
 
     def தரவுகளைப்_பெறு(தன், பயிர்: str) -> xr.DataArray:
         return ஜிப்_பதிவிறக்கம்(
-            பெயர்=தன்.உள்_கோப்பு_பெயரைப்_பெறு(பயிர்),
+            உள்_கோப்பு_பாதை=தன்.உள்_கோப்பு_பெயரைப்_பெறு(பயிர்),
+            பெயர்="SPAM2020",
             பதிவிறக்க_முகவரி="https://uc7d84332914b1a50e4464c7cb27.dl.dropboxusercontent.com/cd/0/get/DF97igdacshN0pMo4sHRy0mNZIS1otumbYJfqQA9QZ0syefbN4u0ty8QO4gIGI8YJ6GbDD3h3Fd-WyG-tMBsaK3_lGKXOkXBIB_MMAzLIPdCvMRtghVNaCVeAnxgu2MskKEhaBVtQ5fB4Jt3d7oxi8XsGNlqYKeNe9dr1CJ9bA0WHA/file?_download_id=61288417551464298075394442349195462245351782123568741928849543311&_log_download_success=1&_notify_domain=www.dropbox.com&dl=1",
-        ).பெறு()
+            தரவு_கோப்புரை=தன்.தரவு_கோப்புரை,
+        ).தரவு_அணியைப்_பெறு()
 
     @staticmethod
     def உள்_கோப்பு_பெயரைப்_பெறு(பயிர்: str, நீர்பாசனம்: bool) -> str:

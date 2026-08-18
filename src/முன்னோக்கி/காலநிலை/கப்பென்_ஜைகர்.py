@@ -1,5 +1,5 @@
-from logging import warn, warning
-from typing import List, Tuple, Literal, Optional
+from logging import warning
+from typing import Literal, Optional
 
 import numpy as np
 import xarray as xr
@@ -82,7 +82,7 @@ class கப்பென்_ஜைகர்(காலநிலை):
         return {"ssp119", "ssp126", "ssp245", "ssp370", "ssp434", "ssp460", "ssp585"}
 
     @property
-    def ஆதறிக்கப்பட்ட_ஆண்டுகள்(தன்) -> Tuple[int, int]:
+    def ஆதறிக்கப்பட்ட_ஆண்டுகள்(தன்) -> tuple[int, int]:
         return 2041, 2099
 
     @property
@@ -95,7 +95,7 @@ class கப்பென்_ஜைகர்(காலநிலை):
         ஆண்டு = சரிபார்த்த_குறிப்பு.ஆண்டு
 
         தரவுகள் = ஜிப்_பதிவிறக்கம்(
-            பெயர்=தன்.உள்_கோப்பு_பெயர்(ஆண்டு, காட்சி=காட்சி),
+            உள்_கோப்பு_பாதை=தன்.உள்_கோப்பு_பாதை(ஆண்டு, காட்சி=காட்சி),
             பதிவிறக்க_முகவரி=தன்.பதிவிறக்க_முகவரி,
             தரவு_கோப்புரை=தன்.தரவு_கோப்புரை,
         ).தரவுத்தளத்தைப்_பெறு()
@@ -123,9 +123,9 @@ class கப்பென்_ஜைகர்(காலநிலை):
     def தொலைவு(
         தன், இலக்கு_மாறிகள்: xr.DataArray, மூல்_காலநிலை_குறிப்பு: xr.DataArray
     ) -> xr.DataArray:
-        pass
+        return xr.where(இலக்கு_மாறிகள் == மூல்_காலநிலை_குறிப்பு, 1, 0)
 
-    def உள்_கோப்பு_பெயர்(தன், ஆண்டு: int, காட்சி: str) -> str:
+    def உள்_கோப்பு_பாதை(தன், ஆண்டு: int, காட்சி: str) -> str:
         துல்லிய_குறிப்பு = தன்.துல்லியம்.replace(".", "p")
         if காட்சி == வறலாற்று_காட்சி:
             return f"1991_2020/koppen_geiger_{துல்லிய_குறிப்பு}.nc"
