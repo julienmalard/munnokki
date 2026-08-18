@@ -1,5 +1,7 @@
+from numbers import Number
 from typing import Optional, Literal
 
+import pybtex.database
 import xarray as xr
 
 import பண்புகள் as ப
@@ -7,6 +9,7 @@ from .மண் import மண்
 from .மாறிலிகள் import மண்_மாறி_அச்சு, மண்_ஆழ_அச்சு
 from ..அச்சுகள் import அகலாங்கு_அச்சு, நெட்டாங்கு_அச்சு
 from ..கருவிகள்.இணைபசே import இணைபசே
+from ..தாள் import ஒற்றுமை_குறிப்பு
 
 
 class மண்கட்டம்(மண்):
@@ -21,14 +24,18 @@ class மண்கட்டம்(மண்):
     https://soilgrids.readthedocs.io/en/latest/index.html
     https://docs.isric.org/globaldata/soilgrids/webdav_from_Python.html
 
-    Poggio, L., de Sousa, L. M., Batjes, N. H., Heuvelink, G. B. M., Kempen, B., Ribeiro, E., and Rossiter, D.: SoilGrids 2.0: producing soil information for the globe with quantified spatial uncertainty, SOIL, 7, 217–240, 2021. DOI
+    Poggio, L., de Sousa, L. M., Batjes, N. H., Heuvelink, G. B. M., Kempen, B., Ribeiro, E., and Rossiter, D.: SoilGrids 2.0: producing soil information for the globe with quantified spatial uncertainty, SOIL, 7, 217–240, 2021. DOI: 10.5194/soil-7-217-2021
     """
 
     ஆழங்கள் = [0, 5, 15, 30, 60, 100, 200]
 
     def __init__(
-        தன், ஆழம்: Optional[list[int | float]] = None, மாறிகள்: Optional[str] = None
+        தன்,
+        ஆழம்: Optional[list[int | float]] = None,
+        மாறிகள்: Optional[str] = None,
+        தரவு_கோப்புரை: Optional[str] = None,
     ):
+        super().__init__(தரவு_கோப்புரை)
         தன்.மாறிகள் = மாறிகள் or [
             ப.அடர்த்தி,
             ப.நேர்மின்_அயனி_பறிமாற்ற_தன்மை,
@@ -81,6 +88,24 @@ class மண்கட்டம்(மண்):
     def மாறி_குறியீட்டைப்_பெறு(தன், மாறி: str) -> str:
         return மாறி_குறியீடுகள்[மாறி]
 
+    def மேற்கோள்(தன்):
+        return [
+            pybtex.database.parse_string(
+                """@Article{soil-7-217-2021,
+                    AUTHOR = {Poggio, L. and de Sousa, L. M. and Batjes, N. H. and Heuvelink, G. B. M. and Kempen, B. and Ribeiro, E. and Rossiter, D.},
+                    TITLE = {SoilGrids 2.0: producing soil information for the globe with quantified spatial uncertainty},
+                    JOURNAL = {SOIL},
+                    VOLUME = {7},
+                    YEAR = {2021},
+                    NUMBER = {1},
+                    PAGES = {217--240},
+                    URL = {https://soil.copernicus.org/articles/7/217/2021/},
+                    DOI = {10.5194/soil-7-217-2021}
+                    }""",
+                bib_format="bibtex",
+            )
+        ]
+
 
 மாறி_குறியீடுகள் = {
     "bdod": ப.அடர்த்தி,
@@ -111,7 +136,13 @@ class ஓஸிஸ்_மண்_வகைகள்(மண்):
         )
         return சேவை.தரவுகளைப்_பெறு(மறை)
 
-    def ஒற்றுமை(தன், நிலநேர்க்கோடு, நிலநிரைக்கொடு, மறை=None) -> xr.DataArray:
+    def ஒற்றுமை(
+        தன்,
+        நிலநேர்க்கோடு: Number,
+        நிலநிரைக்கொடு: Number,
+        குறிப்பு: ஒற்றுமை_குறிப்பு,
+        மறை: Optional[xr.DataArray] = None,
+    ) -> xr.DataArray:
         தரவுகள் = தன்.தரவுகளைப்_பெறு(மறை)
         மண்_வகை = தரவுகள்.sel(
             **{அகலாங்கு_அச்சு: நிலநேர்க்கோடு, நெட்டாங்கு_அச்சு: நிலநிரைக்கொடு},

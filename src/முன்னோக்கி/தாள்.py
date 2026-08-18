@@ -1,10 +1,23 @@
+import typing
 from abc import abstractmethod, ABC
 from numbers import Number
-from typing import Iterable, Optional
+from typing import Optional
 
 import xarray as xr
+from pybtex.database import Entry
 
 from முன்னோக்கி.கருவிகள்.பதிவிறக்கம் import இயல்பு_தரவு_பாதை
+
+if typing.TYPE_CHECKING:
+    from முன்னோக்கி.காலநிலை.காலநிலை import காலநிலை_குறிப்பு
+
+
+class ஒற்றுமை_குறிப்பு:
+    def __init__(
+        தன், காலநிலை: "காலநிலை_குறிப்பு", பயிர்கள்: Optional[str | list[str]] = None
+    ):
+        தன்.காலநிலை = காலநிலை
+        தன்.பயிர்கள் = பயிர்கள்
 
 
 class தாள்(ABC):
@@ -16,6 +29,10 @@ class தாள்(ABC):
         தன்,
         நிலநேர்க்கோடு: Number,
         நிலநிரைக்கொடு: Number,
+        குறிப்பு: ஒற்றுமை_குறிப்பு,
         மறை: Optional[xr.DataArray] = None,
     ) -> xr.DataArray:
         pass
+
+    def மேற்கோள்(தன்) -> list[Entry]:
+        return []

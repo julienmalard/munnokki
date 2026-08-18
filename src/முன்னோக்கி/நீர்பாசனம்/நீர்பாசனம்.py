@@ -1,18 +1,22 @@
 from abc import abstractmethod, ABC
 from numbers import Number
+from typing import Optional
 
 import xarray as xr
 
 from .. import அச்சுகள்
-from ..தாள் import தாள்
+from ..தாள் import தாள், ஒற்றுமை_குறிப்பு
 
 
 class நீர்பாசனம்(தாள், ABC):
-    def __init__(தன்):
-        pass
-
-    def ஒற்றுமை(தன், நிலநேர்க்கோடு: Number, நிலநிரைக்கொடு: Number) -> xr.DataArray:
-        தரவுகள் = தன்.தரவுகளைப்_பெறு()
+    def ஒற்றுமை(
+        தன்,
+        நிலநேர்க்கோடு: Number,
+        நிலநிரைக்கொடு: Number,
+        குறிப்பு: ஒற்றுமை_குறிப்பு,
+        மறை: Optional[xr.DataArray] = None,
+    ) -> xr.DataArray:
+        தரவுகள் = தன்.தரவுகளைப்_பெறு(பயிர்கள்=குறிப்பு.பயிர்கள்)
         புள்ளி = தரவுகள்.sel(
             **{அச்சுகள்.அகலாங்கு_அச்சு: நிலநேர்க்கோடு, அச்சுகள்.நெட்டாங்கு_அச்சு: நிலநிரைக்கொடு},
             method="nearest",
@@ -25,5 +29,5 @@ class நீர்பாசனம்(தாள், ABC):
             )
 
     @abstractmethod
-    def தரவுகளைப்_பெறு(தன்) -> xr.DataArray:
+    def தரவுகளைப்_பெறு(தன், பயிர்கள்: Optional[list[str]]) -> xr.DataArray:
         pass

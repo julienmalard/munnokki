@@ -1,15 +1,32 @@
-import xarray as xr
 import numpy as np
+import xarray as xr
 from scipy.spatial import distance
-from முன்னோக்கி.காலநிலை.மாறிலிகள் import காலநிலை_மாறி_அச்சு
+
 from முன்னோக்கி.அச்சுகள் import நெட்டாங்கு_அச்சு, அகலாங்கு_அச்சு
+from முன்னோக்கி.காலநிலை.மாறிலிகள் import காலநிலை_மாறி_அச்சு
 
 
-def யூக்ளிடிய(மதிப்பு: xr.DataArray, குறிப்பு: xr.DataArray) -> xr.DataArray:
-    return (மதிப்பு - குறிப்பு).reduce(np.linalg.norm, காலநிலை_மாறி_அச்சு)
+def அச்சு_தயாரிப்பு(மதிப்பு: xr.DataArray, குறிப்பு: xr.DataArray, அச்சு: str | list[str]):
+    if not isinstance(அச்சு, str):
+        மாறி_அச்சு_மாற்றம் = {"மாறி": அச்சு}
+        மதிப்பு = மதிப்பு.stack(மாறி_அச்சு_மாற்றம்)
+        குறிப்பு = குறிப்பு.stack(மாறி_அச்சு_மாற்றம்)
+        அச்சு = "மாறி"
+    return மதிப்பு, குறிப்பு, அச்சு
 
 
-def மஹனலோபிஸ்(மதிப்பு: xr.DataArray, குறிப்பு: xr.DataArray) -> xr.DataArray:
+def யூக்ளிடிய(
+    மதிப்பு: xr.DataArray, குறிப்பு: xr.DataArray, அச்சு: str | list[str]
+) -> xr.DataArray:
+    மதிப்பு, குறிப்பு, அச்சு = அச்சு_தயாரிப்பு(மதிப்பு, குறிப்பு, அச்சு)
+    return (மதிப்பு - குறிப்பு).reduce(np.linalg.norm, காலநிலை_மாறி_அச்சு, dims=அச்சு)
+
+
+def மஹனலோபிஸ்(
+    மதிப்பு: xr.DataArray, குறிப்பு: xr.DataArray, அச்சு: str | list[str]
+) -> xr.DataArray:
+    மதிப்பு, குறிப்பு, அச்சு = அச்சு_தயாரிப்பு(மதிப்பு, குறிப்பு, அச்சு)
+
     எதிர்_கூடபரவற்படி = np.linalg.inv(
         np.cov(
             குறிப்பு.stack({"இடம்": [அகலாங்கு_அச்சு, நெட்டாங்கு_அச்சு]}).transpose(
@@ -24,6 +41,7 @@ def மஹனலோபிஸ்(மதிப்பு: xr.DataArray, குற�
     தொலைவு = xr.apply_ufunc(
         செயல்பாட்டு,
         குறிப்பு,
+        மதிப்பு,
         input_core_dims=[["time"]],
         output_core_dims=[["mid_date"]],
         vectorize=True,

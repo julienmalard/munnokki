@@ -4,7 +4,7 @@ from typing import Optional
 
 import xarray as xr
 
-from src.முன்னோக்கி.தாள் import தாள்
+from src.முன்னோக்கி.தாள் import தாள், ஒற்றுமை_குறிப்பு
 from முன்னோக்கி.அச்சுகள் import அகலாங்கு_அச்சு, நெட்டாங்கு_அச்சு
 from முன்னோக்கி.பயிர்.மாறிலிகள் import பயிர்_அச்சு
 
@@ -26,9 +26,10 @@ class பயிர்_பரப்பளவு(தாள், ABC):
         தன்,
         நிலநேர்க்கோடு: Number,
         நிலநிரைக்கொடு: Number,
+        குறிப்பு: ஒற்றுமை_குறிப்பு,
         மறை: Optional[xr.DataArray] = None,
     ) -> xr.DataArray:
-        தரவுகள் = தன்.தரவுகளைப்_பெறு()
+        தரவுகள் = தன்.தரவுகளைப்_பெறு(பயிர்கள்=குறிப்பு.பயிர்கள்)
         # https://www.pythontutorials.net/blog/xarray-select-nearest-lat-lon-with-multi-dimension-coordinates/
         புள்ளி = தரவுகள்.sel(
             **{அகலாங்கு_அச்சு: நிலநேர்க்கோடு, நெட்டாங்கு_அச்சு: நிலநிரைக்கொடு},
