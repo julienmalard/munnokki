@@ -8,6 +8,7 @@ import requests
 import rioxarray as _
 import xarray as xr
 from appdata import AppDataPaths
+from rarfile import RarFile
 
 
 class இயல்பு_தரவு_பாதை:
@@ -111,8 +112,13 @@ class ஜிப்_பதிவிறக்கம்(பதிவிறக்க
                                 தற்காலிகமானது.write(chunk)
 
                     shutil.move(தற்காலிகமானது.name, தன்.ஜிப்_பாதை)
-            with ZipFile(தன்.ஜிப்_பாதை) as ஜிப்:
-                ஜிப்.extractall(தன்.கோப்புரை_பாதை)
+            நீட்டி = os.path.splitext(தன்.ஜிப்_பாதை)[1]
+            if நீட்டி == ".rar":
+                with RarFile(தன்.ஜிப்_பாதை) as ரார்_கோப்பு:
+                    ரார்_கோப்பு.extractall(தன்.கோப்புரை_பாதை)
+            else:
+                with ZipFile(தன்.ஜிப்_பாதை) as ஜிப்:
+                    ஜிப்.extractall(தன்.கோப்புரை_பாதை)
 
         return தன்.கோப்பு_பாதை
 
