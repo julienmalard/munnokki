@@ -1,9 +1,8 @@
-from numbers import Number
 from typing import Optional
 
 import xarray as xr
 
-from . import பயிர்_பரப்பளவு
+from .பயிர்_பரப்பளவு import பயிர்_பரப்பளவு
 from .. import பயிர்_பெயர்கள் as பெயர்கள்
 from ..மாறிலிகள் import பயிர்_அச்சு
 from ...அச்சுகள் import நெட்டாங்கு_அச்சு, அகலாங்கு_அச்சு
