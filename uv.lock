@@ -611,6 +611,7 @@ dependencies = [
     { name = "owslib" },
     { name = "patool" },
     { name = "pybtex" },
+    { name = "pybtexris" },
     { name = "rarfile" },
     { name = "requests" },
     { name = "rioxarray" },
@@ -641,6 +642,7 @@ requires-dist = [
     { name = "owslib", specifier = ">=0.36.0" },
     { name = "patool", specifier = ">=4.0.5" },
     { name = "pybtex", specifier = ">=0.26.1" },
+    { name = "pybtexris", specifier = ">=0.2.0" },
     { name = "rarfile", specifier = ">=4.5" },
     { name = "requests", specifier = ">=2.34.2" },
     { name = "rioxarray", specifier = ">=0.23.0" },
@@ -944,6 +946,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/4d/f5/f30da9c93f0fa6d619332b2f69597219b625f35780473a05164a9981fd9a/pybtex-0.26.1.tar.gz", hash = "sha256:2e5543bea424e60e9e42eef70bff597be48649d8f68ba061a7a092b2477d5464", size = 692991, upload-time = "2026-04-03T13:05:39.014Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/44/f6/775eb92e865b28cdb4ad1f2bed7a5446197516f76b58a950faa3be3fd08d/pybtex-0.26.1-py3-none-any.whl", hash = "sha256:e26c0412cc54f5f21b2a6d9d175762a2d2af9ccf3a8f651cdb89ec035db77aa1", size = 126134, upload-time = "2026-04-03T13:05:40.623Z" },
+]
+
+[[package]]
+name = "pybtexris"
+version = "0.2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pybtex" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/4e/b8/3e294306eafb24d547e888f8b575a1eed9a0ecca6a9f7a327c97f214ed5c/pybtexris-0.2.0.tar.gz", hash = "sha256:8b55aecb7a2370bb98b592befffc776e8d2d05ad62b8754dfa23070cb2d87c4f", size = 9174, upload-time = "2026-07-31T05:41:44.81Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/12/cc/613064b2cd188b6a94f329e269400c9a2c05ca48827526bb60749762cf63/pybtexris-0.2.0-py3-none-any.whl", hash = "sha256:a7bf74b5d974b2fed6ac3e701595e02863112ce51e081f1bc68aa6bc309a6ade", size = 10395, upload-time = "2026-07-31T05:41:43.695Z" },
 ]
 
 [[package]]

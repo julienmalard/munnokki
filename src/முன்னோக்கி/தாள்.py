@@ -6,10 +6,11 @@ from typing import Optional
 import xarray as xr
 from pybtex.database import Entry
 
-from முன்னோக்கி.கருவிகள்.பதிவிறக்கம் import இயல்பு_தரவு_பாதை
+from .கருவிகள்.பதிவிறக்கம் import இயல்பு_தரவு_பாதை
+from .உரிமங்கள் import உரிமம்
 
 if typing.TYPE_CHECKING:
-    from முன்னோக்கி.காலநிலை.காலநிலை import காலநிலை_குறிப்பு
+    from .காலநிலை.காலநிலை import காலநிலை_குறிப்பு
 
 
 class ஒற்றுமை_குறிப்பு:
@@ -36,3 +37,6 @@ class தாள்(ABC):
 
     def மேற்கோள்(தன்) -> list[Entry]:
         return []
+
+    def உரிமம்(தன்) -> Optional[உரிமம்]:
+        pass

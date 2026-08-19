@@ -4,6 +4,7 @@ from typing import Literal, Optional
 
 import numpy as np
 import xarray as xr
+from pybtex.database import Entry
 
 from .காலநிலை import காலநிலை, காலநிலை_குறிப்பு, சரிபார்த்த_காலநிலை_குறிப்பு
 from .மாறிலிகள் import வறலாற்று_காட்சி, காலநிலை_மாறி_அச்சு
@@ -143,3 +144,6 @@ class கப்பென்_ஜைகர்(காலநிலை):
             தரவுகள்["kg_confidence"] >= தன்.தரவு_திறன், தரவுகள்["kg_class"], np.nan
         )
         return தரவுகள்
+
+    def மேற்கோள்(தன்) -> list[Entry]:
+

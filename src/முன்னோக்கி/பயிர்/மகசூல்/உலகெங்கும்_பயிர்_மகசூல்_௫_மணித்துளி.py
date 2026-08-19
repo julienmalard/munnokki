@@ -5,6 +5,7 @@ import xarray as xr
 
 from .மகசூல் import மகசூல்
 from .. import பயிர்_பெயர்கள் as பெயர்கள்
+from ..மாறிலிகள் import பயிர்_அச்சு
 from ...அச்சுகள் import நெட்டாங்கு_அச்சு, அகலாங்கு_அச்சு
 from ...கருவிகள்.பதிவிறக்கம் import ஜிப்_பதிவிறக்கம்
 
@@ -46,6 +47,7 @@ class உலகெங்கும்_பயிர்_மகசூல்_௫_ம�
                 .squeeze("band")
                 .drop_vars(["band", "spatial_ref"])
                 .rename({"x": நெட்டாங்கு_அச்சு, "y": அகலாங்கு_அச்சு})
+                .expand_dims({பயிர்_அச்சு: பயிர்})
             )
         else:
             return xr.DataArray(np.nan)
