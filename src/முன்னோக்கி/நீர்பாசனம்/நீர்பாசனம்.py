@@ -5,7 +5,7 @@ from typing import Optional
 import xarray as xr
 
 from .. import அச்சுகள்
-from ..தாள் import தாள், ஒற்றுமை_குறிப்பு
+from ..தாள் import தாள், ஒற்றுமைக்_குறிப்பு
 
 
 class நீர்பாசனம்(தாள், ABC):
@@ -13,7 +13,7 @@ class நீர்பாசனம்(தாள், ABC):
         தன்,
         நிலநேர்க்கோடு: Number,
         நிலநிரைக்கொடு: Number,
-        குறிப்பு: ஒற்றுமை_குறிப்பு,
+        குறிப்பு: ஒற்றுமைக்_குறிப்பு,
         மறை: Optional[xr.DataArray] = None,
     ) -> xr.DataArray:
         தரவுகள் = தன்.தரவுகளைப்_பெறு(பயிர்கள்=குறிப்பு.பயிர்கள்)

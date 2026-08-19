@@ -13,7 +13,7 @@ if typing.TYPE_CHECKING:
     from .காலநிலை.காலநிலை import காலநிலை_குறிப்பு
 
 
-class ஒற்றுமை_குறிப்பு:
+class ஒற்றுமைக்_குறிப்பு:
     def __init__(
         தன், காலநிலை: "காலநிலை_குறிப்பு", பயிர்கள்: Optional[str | list[str]] = None
     ):
@@ -30,7 +30,7 @@ class தாள்(ABC):
         தன்,
         நிலநேர்க்கோடு: Number,
         நிலநிரைக்கொடு: Number,
-        குறிப்பு: ஒற்றுமை_குறிப்பு,
+        குறிப்பு: ஒற்றுமைக்_குறிப்பு,
         மறை: Optional[xr.DataArray] = None,
     ) -> xr.DataArray:
         pass
