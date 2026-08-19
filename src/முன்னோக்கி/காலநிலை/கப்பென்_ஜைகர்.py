@@ -3,6 +3,7 @@ from logging import warning
 from typing import Literal, Optional
 
 import numpy as np
+import pybtex.database
 import xarray as xr
 from pybtex.database import Entry
 
@@ -146,4 +147,9 @@ class கப்பென்_ஜைகர்(காலநிலை):
         return தரவுகள்
 
     def மேற்கோள்(தன்) -> list[Entry]:
-
+        return [
+            pybtex.database.parse_string(
+                "TY  - JOUR\nAU  - Beck, Hylke E.\nAU  - McVicar, Tim R.\nAU  - Vergopolan, Noemi\nAU  - Berg, Alexis\nAU  - Lutsko, Nicholas J.\nAU  - Dufour, Ambroise\nAU  - Zeng, Zhenzhong\nAU  - Jiang, Xin\nAU  - van Dijk, Albert I. J. M.\nAU  - Miralles, Diego G.\nPY  - 2023\nDA  - 2023/10/23\nTI  - High-resolution (1 km) Köppen-Geiger maps for 1901–2099 based on constrained CMIP6 projections\nJO  - Scientific Data\nSP  - 724\nVL  - 10\nIS  - 1\nAB  - We introduce Version 2 of our widely used 1-km Köppen-Geiger climate classification maps for historical and future climate conditions. The historical maps (encompassing 1901–1930, 1931–1960, 1961–1990, and 1991–2020) are based on high-resolution, observation-based climatologies, while the future maps (encompassing 2041–2070 and 2071–2099) are based on downscaled and bias-corrected climate projections for seven shared socio-economic pathways (SSPs). We evaluated 67 climate models from the Coupled Model Intercomparison Project phase 6 (CMIP6) and kept a subset of 42 with the most plausible CO2-induced warming rates. We estimate that from 1901–1930 to 1991–2020, approximately 5% of the global land surface (excluding Antarctica) transitioned to a different major Köppen-Geiger class. Furthermore, we project that from 1991–2020 to 2071–2099, 5% of the land surface will transition to a different major class under the low-emissions SSP1-2.6 scenario, 8% under the middle-of-the-road SSP2-4.5 scenario, and 13% under the high-emissions SSP5-8.5 scenario. The Köppen-Geiger maps, along with associated confidence estimates, underlying monthly air temperature and precipitation data, and sensitivity metrics for the CMIP6 models, can be accessed at www.gloh2o.org/koppen.\nSN  - 2052-4463\nUR  - https://doi.org/10.1038/s41597-023-02549-6\nDO  - 10.1038/s41597-023-02549-6\nID  - Beck2023\nER  - \n",
+                bib_format="ris",
+            )
+        ]

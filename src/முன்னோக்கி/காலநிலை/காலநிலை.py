@@ -2,11 +2,9 @@ from abc import ABC, abstractmethod
 from numbers import Number
 from typing import Optional, Iterable
 
+import xarray as xr
 from xarray_regrid import Grid
 
-import xarray as xr
-
-from முன்னோக்கி.கருவிகள்.படிமுறைகள் import மஹனலோபிஸ்
 from .பிழைகள் import (
     ஆதறிக்கப்பட்டாத_ஆண்டு_பிழை,
     ஆதறிக்கப்பட்டாத_காலநிலைக்காட்சி_பிழை,
@@ -14,6 +12,7 @@ from .பிழைகள் import (
 )
 from .மாறிலிகள் import வறலாற்று_காட்சி, காலநிலை_மாறி_அச்சு
 from ..அச்சுகள் import அகலாங்கு_அச்சு, நெட்டாங்கு_அச்சு
+from ..கருவிகள்.படிமுறைகள் import மஹனலோபிஸ்
 from ..தாள் import தாள், ஒற்றுமை_குறிப்பு
 
 

@@ -2,8 +2,8 @@ import numpy as np
 import xarray as xr
 from scipy.spatial import distance
 
-from முன்னோக்கி.அச்சுகள் import நெட்டாங்கு_அச்சு, அகலாங்கு_அச்சு
-from முன்னோக்கி.காலநிலை.மாறிலிகள் import காலநிலை_மாறி_அச்சு
+from ..அச்சுகள் import நெட்டாங்கு_அச்சு, அகலாங்கு_அச்சு
+from ..காலநிலை.மாறிலிகள் import காலநிலை_மாறி_அச்சு
 
 
 def அச்சு_தயாரிப்பு(மதிப்பு: xr.DataArray, குறிப்பு: xr.DataArray, அச்சு: str | list[str]):

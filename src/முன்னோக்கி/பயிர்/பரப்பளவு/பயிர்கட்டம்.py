@@ -60,8 +60,10 @@ class பயிர்கட்டம்(பயிர்_பரப்பளவு
 
     def மேற்கோள்(தன்) -> list[Entry]:
         return [
-            pybtex.database.parse_string("TY  - JOUR\nAU  - Tang, Fiona H. M.\nAU  - Nguyen, Thu Ha\nAU  - Conchedda, Giulia\nAU  - Casse, Leon\nAU  - Tubiello, Francesco N.\nAU  - Maggi, Federico\nPY  - 2024\nDA  - 2024/04/22\nTI  - CROPGRIDS: a global geo-referenced dataset of 173 crops\nJO  - Scientific Data\nSP  - 413\nVL  - 11\nIS  - 1\nAB  - CROPGRIDS is a comprehensive global geo-referenced dataset providing area information for 173 crops for the year 2020, at a resolution of 0.05° (about 5.6 km at the equator). It represents a major update of the Monfreda et al. (2008) dataset (hereafter MRF), the most widely used geospatial dataset previously available, covering 175 crops with reference year 2000 at 10 km spatial resolution. CROPGRIDS builds on information originally provided in MRF and expands it using 27 selected published gridded datasets, subnational data of 52 countries obtained from National Statistical Offices, and the 2020 national-level statistics from FAOSTAT, providing more recent harvested and crop (physical) areas for 173 crops at regional, national, and global levels. The CROPGRIDS data advance the current state of knowledge on the spatial distribution of crops, providing useful inputs for modelling studies and sustainability analyses relevant to national and international processes.\nSN  - 2052-4463\nUR  - https://doi.org/10.1038/s41597-024-03247-7\nDO  - 10.1038/s41597-024-03247-7\nID  - Tang2024\nER  - ", bib_format="ris"),
-
+            pybtex.database.parse_string(
+                "TY  - JOUR\nAU  - Tang, Fiona H. M.\nAU  - Nguyen, Thu Ha\nAU  - Conchedda, Giulia\nAU  - Casse, Leon\nAU  - Tubiello, Francesco N.\nAU  - Maggi, Federico\nPY  - 2024\nDA  - 2024/04/22\nTI  - CROPGRIDS: a global geo-referenced dataset of 173 crops\nJO  - Scientific Data\nSP  - 413\nVL  - 11\nIS  - 1\nAB  - CROPGRIDS is a comprehensive global geo-referenced dataset providing area information for 173 crops for the year 2020, at a resolution of 0.05° (about 5.6 km at the equator). It represents a major update of the Monfreda et al. (2008) dataset (hereafter MRF), the most widely used geospatial dataset previously available, covering 175 crops with reference year 2000 at 10 km spatial resolution. CROPGRIDS builds on information originally provided in MRF and expands it using 27 selected published gridded datasets, subnational data of 52 countries obtained from National Statistical Offices, and the 2020 national-level statistics from FAOSTAT, providing more recent harvested and crop (physical) areas for 173 crops at regional, national, and global levels. The CROPGRIDS data advance the current state of knowledge on the spatial distribution of crops, providing useful inputs for modelling studies and sustainability analyses relevant to national and international processes.\nSN  - 2052-4463\nUR  - https://doi.org/10.1038/s41597-024-03247-7\nDO  - 10.1038/s41597-024-03247-7\nID  - Tang2024\nER  - ",
+                bib_format="ris",
+            ),
         ]
 
 
@@ -217,7 +219,7 @@ class பயிர்கட்டம்(பயிர்_பரப்பளவு
     "strawberry": பெயர்கள்.செம்புற்று,
     "stringbean": பெயர்கள்.அவரைக்காய்,
     "sugarbeet": பெயர்கள்.சக்கரைச்_செங்கிழங்கு,
-    "sugarcane": பெயர்கள்.கம்பு,
+    "sugarcane": பெயர்கள்.கரும்பு,
     # "sugarnes": பெயர்கள்.வேறு_சக்கரை,
     "sunflower": பெயர்கள்.சூரியகாந்தி,
     "swedefor": பெயர்கள்.தீவன_வெண்_நூல்கோல்,
