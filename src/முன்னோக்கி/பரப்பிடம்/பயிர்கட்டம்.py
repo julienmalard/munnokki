@@ -1,17 +1,65 @@
 import re
-from functools import lru_cache
 from numbers import Real
 from typing import Optional
 
 import xarray as xr
 
-from .பரப்பிடம் import பரப்பிடம்
-from ..அச்சுகள் import அகலாங்கு_அச்சு, நெட்டாங்கு_அச்சு
-from ..கருவிகள்.பதிவிறக்கம் import ஜிப்_பதிவிறக்கம்
+from .பரப்பிடம் import பரப்பிடப்_பகுப்பி
+from முன்னோக்கி.அச்சுகள் import அகலாங்கு_அச்சு, நெட்டாங்கு_அச்சு
+from முன்னோக்கி.கருவிகள்.பதிவிறக்கம் import ஜிப்_பதிவிறக்கம்
 
 
-class பயிர்க்கட்டம்_பரப்பிடம்(பரப்பிடம்):
-    நாடு_பெயர்கள் = {"கனடா": "Canada", "பாரதம்": "India"}
+class பயிர்க்கட்டம்_பரப்பிடம்(பரப்பிடப்_பகுப்பி):
+    நாடு_பெயர்கள் = {
+        "கனடா": "Canada",
+        "பாரதம்": "India",
+        "ஆப்கானிசுத்தான்": "Afghanistan",
+        "அர்மீனியா": "Armenia",
+        "அசர்பைசான்": "Azerbaijan",
+        "பகுரைன்": "Bahrain",
+        "வங்காளதேசம்": "Bangladesh",
+        "பூட்டான்": "Bhutan",
+        "புரூணை": "Brunei",
+        "கம்போடியா": "Cambodia",
+        "சீன": "China",
+        "சைப்பிரசு": "Cyprus",
+        "சியார்சியா": "Georgia",
+        "இந்தோனேசியா": "Indonesia",
+        "ஈரான்": "Iran",
+        "ஈராக்": "Iraq",
+        "இசுரேல்": "Israel",
+        "சப்பான்": "Japan",
+        "சோர்தான்": "Jordan",
+        "கசகிசுதான்": "Kazakhstan",
+        "வடகொரியா": "North Korea",
+        "தென் கொரியா": "South Korea",
+        "குவைத்": "Kuwait",
+        "கிர்கிசுத்தான்": "Kyrgyzstan",
+        "லாவோஸ்": "Laos",
+        "லெபனான்": "Lebanon",
+        "மலேசியா": "Malaysia",
+        "மங்கோலியா": "Mongolia",
+        "மியான்மர்": "Myanmar",
+        "நேபாளம்": "Nepal",
+        "ஓமான்": "Oman",
+        "பாக்கிசுத்தான்": "Pakistan",
+        "பிலிப்பீன்சு": "Philippines",
+        "கத்தார்": "Qatar",
+        "ரசியா": "Russian Fed.",
+        "சவூதி அரேபியா": "Saudi Arabia",
+        "சிங்கப்பூர்": "Singapore",
+        "இலங்கை": "Sri Lanka",
+        "சிரியா": "Syria",
+        "தச்சிகிஸ்தான்": "Tajikistan",
+        "தாய்லாந்து": "Thailand",
+        "கிழக்குத் திமோர்": "Timor-Leste",
+        "துருக்கி": "Turkey",
+        "துருக்மெனிசுதான்": "Turkmenistan",
+        "ஐக்கிய அரபு அமீரகம்": "U.A.E.",
+        "உசுபெக்கிசுத்தான்": "Uzbekistan",
+        "வியட்நாம்": "Viet Nam",
+        "யெமன்": "Yemen",
+    }
 
     def __init__(
         தன்,

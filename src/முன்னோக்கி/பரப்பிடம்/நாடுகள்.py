@@ -1,9 +1,7 @@
-class இடம்:
-    def நாடுகள்(தன்) -> list[str]:
-        pass
+from .பரப்பிடம் import பரப்பிடம்
 
 
-class ஆசியா(இடம்):
+class ஆசியா(பரப்பிடம்):
     def நாடுகள்(தன்) -> list[str]:
         return [
             "ஆப்கானிசுத்தான்",
