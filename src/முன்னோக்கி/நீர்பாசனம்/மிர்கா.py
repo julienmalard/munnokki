@@ -1,6 +1,7 @@
 import os.path
 from typing import Optional, Literal
 
+import pybtex.database
 import xarray as xr
 
 from ..கருவிகள்.பதிவிறக்கம் import ஜிப்_பதிவிறக்கம்
@@ -91,3 +92,13 @@ class மிர்கா(நீர்பாசனம்):
             return next(பெ for பெ in தன்.பெயர்_சமானம்.keys() if தன்.பெயர்_சமானம்[பெ] == பயிர்)
         except StopIteration:
             return பயிர்
+
+    def மேற்கோள்(தன்):
+        return [
+            pybtex.database.parse_string(
+                "Kebede, E., Oluoch, K. O., Siebert, S., Mehta, P., Hartman, S., Jägermeyr, J., Ray, D., Ali, T., Brauman, K. A., Deng, Q., Xie, W., Davis, K. F. (2026). A global open-source dataset of monthly irrigated and rainfed cropped areas (MIRCA-OS) for the 21st century, HydroShare, https://doi.org/10.4211/hs.60a890eb841c460192c03bb590687145"
+            ),
+            pybtex.database.parse_string(
+                "TY  - JOUR\nAU  - Kebede, Endalkachew Abebe\nAU  - Oluoch, Kevin Ong’are\nAU  - Siebert, Stefan\nAU  - Mehta, Piyush\nAU  - Hartman, Sarah\nAU  - Jägermeyr, Jonas\nAU  - Ray, Deepak\nAU  - Ali, Tariq\nAU  - Brauman, Kate A.\nAU  - Deng, Qinyu\nAU  - Xie, Wei\nAU  - Davis, Kyle Frankel\nPY  - 2025\nDA  - 2025/02/04\nTI  - A global open-source dataset of monthly irrigated and rainfed cropped areas (MIRCA-OS) for the 21st century\nJO  - Scientific Data\nSP  - 208\nVL  - 12\nIS  - 1\nAB  - Crop production is among the most extensive human activities on the planet – with critical importance for global food security, land use, environmental burden, and climate. Yet despite the key role that croplands play in global land use and Earth systems, there remains little understanding of how spatial patterns of global crop cultivation have recently evolved and which crops have contributed most to these changes. Here we construct a new data library of subnational crop-specific irrigated and rainfed harvested area statistics and combine it with global gridded land cover products to develop a global gridded (5-arcminute) irrigated and rainfed cropped area (MIRCA-OS) dataset for the years 2000 to 2015 for 23 crop classes. These global data products support critical insights into the spatially detailed patterns of irrigated and rainfed cropland change since the start of the century and provide an improved foundation for a wide array of global assessments spanning agriculture, water resource management, land use change, climate impact, and sustainable development.\nSN  - 2052-4463\nUR  - https://doi.org/10.1038/s41597-024-04313-w\nDO  - 10.1038/s41597-024-04313-w\nID  - Kebede2025\nER  - "
+            ),
+        ]
