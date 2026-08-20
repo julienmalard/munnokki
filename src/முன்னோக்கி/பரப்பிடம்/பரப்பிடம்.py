@@ -19,6 +19,7 @@ class பரப்பிடப்_பகுப்பி(ABC):
     @abstractmethod
     def பெட்டி(
         தன்,
+        பரப்பிடம்_குறிப்பு: பரப்பிடம்,
     ) -> tuple[Real, Real]:
         pass
 
