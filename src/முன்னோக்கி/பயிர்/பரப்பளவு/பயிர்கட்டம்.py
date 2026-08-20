@@ -15,7 +15,6 @@ class பயிர்கட்டம்(பயிர்_பரப்பளவு
     def __init__(
         தன்,
         தரவு_திறன்=0,
-        பயிர்கள்: Optional[str | list[str]] = None,
         தரவு_கோப்புரை: Optional[str] = None,
         பதிவிறக்க_முகவரி="https://figshare.com/ndownloader/articles/22491997/versions/9",
     ):
