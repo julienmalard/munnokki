@@ -24,7 +24,7 @@ def யூக்ளிடிய(
     மதிப்பு, குறிப்பு, மாறி_அச்சு = அச்சு_தயாரிப்பு(மதிப்பு, குறிப்பு, மாறி_அச்சு)
     return (மதிப்பு - குறிப்பு.squeeze()).reduce(np.linalg.norm, dim=மாறி_அச்சு)
 
-from sklearn.preprocessing import MinMaxScaler
+
 def மஹனலோபிஸ்(
     மதிப்பு: xr.DataArray, குறிப்பு: xr.DataArray, மாறி_அச்சு: str | list[str]
 ) -> xr.DataArray:
@@ -43,9 +43,7 @@ def மஹனலோபிஸ்(
     )
 
     def செயல்பாட்டு(ஆ, இ):
-        d = distance.mahalanobis(ஆ, இ, எதிர்_கூடபரவற்படி)
-        print(ஆ, இ, d)
-        return d
+        return distance.mahalanobis(ஆ, இ, எதிர்_கூடபரவற்படி)
 
     தொலைவு = xr.apply_ufunc(
         செயல்பாட்டு,
