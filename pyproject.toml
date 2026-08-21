@@ -46,4 +46,6 @@ required-environments = [
 dev = [
     "pytest>=9.1.1",
     "scipy-stubs~=1.18.0",
+    "coverage>=7.8.0",
+    "twine>=6.2.0",
 ]
