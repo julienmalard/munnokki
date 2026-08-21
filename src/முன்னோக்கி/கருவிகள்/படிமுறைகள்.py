@@ -15,22 +15,22 @@ def அச்சு_தயாரிப்பு(மதிப்பு: xr.DataAr
 
 
 def யூக்ளிடிய(
-    மதிப்பு: xr.DataArray, குறிப்பு: xr.DataArray, அச்சு: str | list[str]
+    மதிப்பு: xr.DataArray, குறிப்பு: xr.DataArray, மாறி_அச்சு: str | list[str]
 ) -> xr.DataArray:
-    மதிப்பு, குறிப்பு, அச்சு = அச்சு_தயாரிப்பு(மதிப்பு, குறிப்பு, அச்சு)
-    return (மதிப்பு - குறிப்பு.squeeze()).reduce(np.linalg.norm, dim=அச்சு)
+    மதிப்பு, குறிப்பு, மாறி_அச்சு = அச்சு_தயாரிப்பு(மதிப்பு, குறிப்பு, மாறி_அச்சு)
+    return (மதிப்பு - குறிப்பு.squeeze()).reduce(np.linalg.norm, dim=மாறி_அச்சு)
 
 
 def மஹனலோபிஸ்(
-    மதிப்பு: xr.DataArray, குறிப்பு: xr.DataArray, அச்சு: str | list[str]
+    மதிப்பு: xr.DataArray, குறிப்பு: xr.DataArray, மாறி_அச்சு: str | list[str]
 ) -> xr.DataArray:
-    மதிப்பு, குறிப்பு, அச்சு = அச்சு_தயாரிப்பு(மதிப்பு, குறிப்பு, அச்சு)
+    மதிப்பு, குறிப்பு, மாறி_அச்சு = அச்சு_தயாரிப்பு(மதிப்பு, குறிப்பு, மாறி_அச்சு)
 
     எதிர்_கூடபரவற்படி = np.linalg.inv(
         xr.apply_ufunc(
             np.cov,
             மதிப்பு.stack({"இடம்": [அகலாங்கு_அச்சு, நெட்டாங்கு_அச்சு]}).transpose(
-                *[அச்சு, "இடம்"]
+                *[மாறி_அச்சு, "இடம்"]
             ),
             input_core_dims=[["இடம்"]],
             output_core_dims=[["இரண்டாவது மாறி அச்சு"]],
@@ -44,7 +44,7 @@ def மஹனலோபிஸ்(
         செயல்பாட்டு,
         குறிப்பு.squeeze([அகலாங்கு_அச்சு, நெட்டாங்கு_அச்சு]),
         மதிப்பு,
-        input_core_dims=[[அச்சு], [அச்சு]],
+        input_core_dims=[[மாறி_அச்சு], [மாறி_அச்சு]],
         vectorize=True,
         dask="parallelized",
         output_dtypes=["float"],

@@ -29,6 +29,13 @@ dependencies = [
     "xarray-regrid>=0.4.2",
 ]
 
+[tool.pytest.ini_options]
+python_files = "*_சோதிக்க.py"
+python_classes = "சோதனை"
+python_functions = "*_சோதிக்க"
+pythonpath = [
+  "src"
+]
 
 [tool.uv]
 required-environments = [
