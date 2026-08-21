@@ -1,4 +1,4 @@
-name: Publish
+name: வெளியீடு
 on:
   push:
     tags:
@@ -16,24 +16,24 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Set up Python
+      - name: பைத்தன் அமைத்தல்
         uses: actions/setup-python@v7
         with:
           python-version-file: "pyproject.toml"
 
-      - name: Install uv
+      - name: uv நிறுவல்
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           enable-cache: true
 
-      - name: Install the project
+      - name: முன்னோக்கி நிறுவல்
         run: uv sync --locked --all-extras --dev
 
-      - name: Run tests
+      - name: சோதனைகள்
         run: uv run pytest tests
 
-      - name: Build
+      - name: உருவாக்கம்
         run: uv build
 
-      - name: Publish
+      - name: வெளியீடு
         run: uv publish
