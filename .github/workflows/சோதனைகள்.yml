@@ -1,4 +1,4 @@
-name: தன்விவஙர்களின் சோதனைகள்
+name: முன்னோக்கியின் சோதனைகள்
 
 concurrency:
   group: சோதனைகள்-${{ github.ref }}
@@ -39,7 +39,7 @@ jobs:
       - name: சோதிக்க
         run: uv run coverage run -m pytest && uv run coverage xml
 
-      - name: Envoyer rapports de couverture à Codecov
+      - name: கோட்கவுக்கு அறிவிக்கை அனுப்பு
         uses: codecov/codecov-action@v7
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
