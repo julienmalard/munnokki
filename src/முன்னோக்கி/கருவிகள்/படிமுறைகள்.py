@@ -13,6 +13,10 @@ def அச்சு_தயாரிப்பு(மதிப்பு: xr.DataAr
         அச்சு = "மாறி"
     return மதிப்பு, குறிப்பு, அச்சு
 
+def நெறிமப்படுத்துக்கொ(குறிப்பு, *மற்றது):
+    கூட்டுச்சராசரி = குறிப்பு.mean()
+    நியமவிலகல் = குறிப்பு.std()
+    return (குறிப்பு-கூட்டுச்சராசரி)/நியமவிலகல், *[(ம-கூட்டுச்சராசரி)/நியமவிலகல் for ம in மற்றது]
 
 def யூக்ளிடிய(
     மதிப்பு: xr.DataArray, குறிப்பு: xr.DataArray, மாறி_அச்சு: str | list[str]
@@ -20,11 +24,12 @@ def யூக்ளிடிய(
     மதிப்பு, குறிப்பு, மாறி_அச்சு = அச்சு_தயாரிப்பு(மதிப்பு, குறிப்பு, மாறி_அச்சு)
     return (மதிப்பு - குறிப்பு.squeeze()).reduce(np.linalg.norm, dim=மாறி_அச்சு)
 
-
+from sklearn.preprocessing import MinMaxScaler
 def மஹனலோபிஸ்(
     மதிப்பு: xr.DataArray, குறிப்பு: xr.DataArray, மாறி_அச்சு: str | list[str]
 ) -> xr.DataArray:
     மதிப்பு, குறிப்பு, மாறி_அச்சு = அச்சு_தயாரிப்பு(மதிப்பு, குறிப்பு, மாறி_அச்சு)
+    # மதிப்பு, குறிப்பு = நெறிமப்படுத்துக்கொ(மதிப்பு, குறிப்பு)
 
     எதிர்_கூடபரவற்படி = np.linalg.inv(
         xr.apply_ufunc(
@@ -38,7 +43,9 @@ def மஹனலோபிஸ்(
     )
 
     def செயல்பாட்டு(ஆ, இ):
-        return distance.mahalanobis(ஆ, இ, எதிர்_கூடபரவற்படி)
+        d = distance.mahalanobis(ஆ, இ, எதிர்_கூடபரவற்படி)
+        print(ஆ, இ, d)
+        return d
 
     தொலைவு = xr.apply_ufunc(
         செயல்பாட்டு,
@@ -50,5 +57,4 @@ def மஹனலோபிஸ்(
         output_dtypes=["float"],
     )
 
-    # https://www.nature.com/articles/s41467-019-08540-3#Sec8
-    return xr.where(தொலைவு > 2, 0, (2 - தொலைவு) / 2)
+    return தொலைவு
