@@ -34,12 +34,16 @@ python_files = "*_சோதிக்க.py"
 python_classes = "சோதனை"
 python_functions = "*_சோதிக்க"
 pythonpath = [
-  "src"
+    "src"
 ]
+
+[tool.coverage.run]
+source = ["src"]
+
 
 [tool.uv]
 required-environments = [
-  "python_version >= '3.14'",
+    "python_version >= '3.14'",
 ]
 
 [dependency-groups]

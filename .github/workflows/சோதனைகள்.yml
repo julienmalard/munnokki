@@ -1,6 +1,8 @@
 name: முன்னோக்கியின் சோதனைகள்
 
-
+concurrency:
+  group: சோதனைகள்-${{ github.ref }}
+  cancel-in-progress: true
 
 defaults:
   run:
@@ -9,12 +11,12 @@ defaults:
 on:
   push:
     branches:
-      - முதன்மை
+      - முதன்மை_
     paths-ignore:
       - '**.md'
   pull_request:
     branches:
-      - முதன்மை
+      - முதன்மை_
     paths-ignore:
         - '**.md'
 

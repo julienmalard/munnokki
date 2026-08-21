@@ -40,3 +40,6 @@ class தாள்(ABC):
 
     def உரிமம்(தன்) -> Optional[உரிமம்]:
         pass
+
+    def __str__(தன்):
+        return f"{தன்.__class__.__name__}"
