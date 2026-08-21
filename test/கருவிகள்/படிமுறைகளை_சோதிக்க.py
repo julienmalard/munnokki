@@ -6,8 +6,10 @@ import xarray.testing as xrt
 from முன்னோக்கி.அச்சுகள் import அகலாங்கு_அச்சு, நெட்டாங்கு_அச்சு
 from முன்னோக்கி.கருவிகள்.படிமுறைகள் import யூக்ளிடிய, மஹனலோபிஸ்
 
+
 def இரைச்சலுடன்(தரவுகள்: np.ndarray):
-    return தரவுகள் + np.random.random(தரவுகள்.size).reshape(தரவுகள்.shape)*0.01
+    return தரவுகள் + np.random.random(தரவுகள்.size).reshape(தரவுகள்.shape) * 0.01
+
 
 @pytest.mark.parametrize("செயல்பாடு", [யூக்ளிடிய, மஹனலோபிஸ்])
 def தொலைவு_சோதிக்க(செயல்பாடு):
@@ -44,7 +46,9 @@ def தொலைவு_பல_அச்சுகள்_சோதிக்க(ச
     அகலாங்கு = np.arange(11)
     நெட்டாங்கு = np.arange(13)
     மதிப்பு = xr.DataArray(
-        np.random.random(அகலாங்கு.size * நெட்டாங்கு.size * 5 * 2).reshape((அகலாங்கு.size, நெட்டாங்கு.size, 5, 2)),
+        np.random.random(அகலாங்கு.size * நெட்டாங்கு.size * 5 * 2).reshape(
+            (அகலாங்கு.size, நெட்டாங்கு.size, 5, 2)
+        ),
         coords={
             அகலாங்கு_அச்சு: அகலாங்கு,
             நெட்டாங்கு_அச்சு: நெட்டாங்கு,
