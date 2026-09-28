@@ -25,7 +25,7 @@ dependencies = [
     "rioxarray>=0.23.0",
     "scipy>=1.18.1",
     "soilgrids>=0.1.5",
-    "urllib3>=2.7.0",
+    "urllib3>=2.8.0",
     "xarray>=2026.7.0",
     "xarray-regrid>=0.4.2",
 ]
@@ -51,7 +51,7 @@ required-environments = [
 dev = [
     "pytest>=9.1.1",
     "scipy-stubs~=1.18.1",
-    "coverage>=7.16.1",
+    "coverage>=7.16.2",
     "twine>=7.0.0",
     "requests-mock>=1.12.1",
 ]
