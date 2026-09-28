@@ -70,35 +70,37 @@ class இணைபசே:
             if மேற்கு >= கிழக்கு or வடக்கு <= தேற்கு:
                 return None
 
-            பதில் = தன்.சேவை.get_coverage_data(
-                service_id=தன்.வரைப்படம்,
-                coverage_id=தன்.அடையாளம்,
-                west=மேற்கு,
-                south=தேற்கு,
-                east=கிழக்கு,
-                north=வடக்கு,
-                width=500 * (கிழக்கு - மேற்கு),
-                height=500 * (வடக்கு - தேற்கு),
-                crs="urn:ogc:def:crs:EPSG::4326",
-                output="test latlon.tif",
-            )
-            பதில் = xr.where(பதில் == பதில்.attrs["_FillValue"], np.nan, பதில்)
-            if பதில்.count().values:
+            with NamedTemporaryFile(suffix=".tif") as தற்காலிகமானது:
+                பதில் = தன்.சேவை.get_coverage_data(
+                    service_id=தன்.வரைப்படம்,
+                    coverage_id=தன்.அடையாளம்,
+                    west=மேற்கு,
+                    south=தேற்கு,
+                    east=கிழக்கு,
+                    north=வடக்கு,
+                    width=500 * (கிழக்கு - மேற்கு),
+                    height=500 * (வடக்கு - தேற்கு),
+                    crs="urn:ogc:def:crs:EPSG::4326",
+                    output=தற்காலிகமானது.name,
+                )
 
-                தரவுகள் = (பதில்.rename(
-                    {
-                        "x": நெட்டாங்கு_அச்சு,
-                        "y": அகலாங்கு_அச்சு,
-                    }
-                ).squeeze("band").drop_vars(["band", "spatial_ref"]))
-            else:
-                # காலியான தரவுகளுக்காக நினைவகத்தில் இடம் எடுக்க கூடாது
-                தரவுகள் = xr.DataArray(coords={நெட்டாங்கு_அச்சு: மேற்கு, அகலாங்கு_அச்சு: தேற்கு})
+                பதில் = xr.where(பதில் == பதில்.attrs["_FillValue"], np.nan, பதில்)
+                if பதில்.count().values:
 
-            தரவுகள்.name = தன்.அடையாளம்
+                    தரவுகள் = (பதில்.rename(
+                        {
+                            "x": நெட்டாங்கு_அச்சு,
+                            "y": அகலாங்கு_அச்சு,
+                        }
+                    ).squeeze("band").drop_vars(["band", "spatial_ref"]))
+                else:
+                    # காலியான தரவுகளுக்காக நினைவகத்தில் இடம் எடுக்க கூடாது
+                    தரவுகள் = xr.DataArray(coords={நெட்டாங்கு_அச்சு: மேற்கு, அகலாங்கு_அச்சு: தேற்கு})
 
-            வேர்_கோப்புரை_உருவாக்கு(கட்ட_கோப்பு_பெயர்)
+                தரவுகள்.name = தன்.அடையாளம்
 
-            தரவுகள்.to_netcdf(கட்ட_கோப்பு_பெயர்)
+                வேர்_கோப்புரை_உருவாக்கு(கட்ட_கோப்பு_பெயர்)
+
+                தரவுகள்.to_netcdf(கட்ட_கோப்பு_பெயர்)
 
             return கட்ட_கோப்பு_பெயர்
