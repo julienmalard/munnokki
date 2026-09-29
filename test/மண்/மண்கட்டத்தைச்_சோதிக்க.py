@@ -2,18 +2,22 @@ import http
 import http.client
 from tempfile import TemporaryDirectory
 from urllib.parse import parse_qs
+
 import numpy as np
 import pytest
 import requests as rq
 import xarray as xr
+import xarray.testing as xrt
 from rasterio import MemoryFile
 from requests_mock.response import _IOReader
 from urllib3 import HTTPResponse
 from urllib3.util import parse_url
-import xarray.testing as xrt
+
 from முன்னோக்கி.அச்சுகள் import அகலாங்கு_அச்சு, நெட்டாங்கு_அச்சு
-from முன்னோக்கி.மண்.மண்கட்டம் import மண்கட்டம்
+from முன்னோக்கி.காலநிலை.காலநிலை import காலநிலை_குறிப்பு
+from முன்னோக்கி.தாள் import ஒற்றுமைக்_குறிப்பு
 from முன்னோக்கி.மண்.பண்புகள் import பண்புகள் as ப
+from முன்னோக்கி.மண்.மண்கட்டம்.மண்கட்டம் import மண்கட்டம், ஓஸிஸ்_மண்_வகைகள்
 from முன்னோக்கி.மண்.மாறிலிகள் import மண்_ஆழ_அச்சு, மண்_மாறி_அச்சு
 
 
@@ -57,12 +61,17 @@ def சுமா_மண்க்கட்டம்(requests_mock):
             உயரம் = float(மாறிகள்["height"][0])
             அகல_படி = (அளவுகள்[2] - அளவுகள்[0]) / அகலம்
             உயர_படி = (அளவுகள்[3] - அளவுகள்[1]) / உயரம்
+            நெட்டாங்கு = np.arange(அளவுகள்[0], அளவுகள்[2], அகல_படி)
+            அகலாங்கு = np.arange(அளவுகள்[1], அளவுகள்[3], உயர_படி)
+
             தரவுகள் = xr.DataArray(
-                -32768,
+                np.random.random(நெட்டாங்கு.size * அகலாங்கு.size).reshape(
+                    (1, நெட்டாங்கு.size, அகலாங்கு.size, 1)
+                ),
                 coords={
                     "band": [1],
-                    "x": np.arange(அளவுகள்[0], அளவுகள்[2], அகல_படி),
-                    "y": np.arange(அளவுகள்[3], அளவுகள்[1], -உயர_படி),
+                    "x": நெட்டாங்கு,
+                    "y": அகலாங்கு,
                     "spatial_ref": 0,
                 },
                 dims=("band", "y", "x", "spatial_ref"),
@@ -90,29 +99,69 @@ def மறையுடன்_தரவுகளைப்_பெறு_சோத�
     மறை = xr.DataArray(
         1,
         coords={
-            அகலாங்கு_அச்சு: np.arange(0, 10),
-            நெட்டாங்கு_அச்சு: np.arange(0, 7),
+            அகலாங்கு_அச்சு: np.arange(0, 10, 0.5),
+            நெட்டாங்கு_அச்சு: np.arange(0, 7, 0.5),
         },
         dims=[அகலாங்கு_அச்சு, நெட்டாங்கு_அச்சு],
     )
     ஆழம் = [0, 10]
     மாறிகள் = [ப["அமில_காரத்தன்மை"], ப["களிமண்"]]
     with TemporaryDirectory() as தற்காலிகமானது:
-        தரவுகள் = மண்கட்டம்(ஆழம்=ஆழம், மாறிகள்=மாறிகள், தரவு_கோப்புரை=தற்காலிகமானது).தரவுகளைப்_பெறு(
-            மறை=மறை
+        தரவுகள் = மண்கட்டம்(
+            ஆழம்=ஆழம், மாறிகள்=மாறிகள், தரவு_கோப்புரை=தற்காலிகமானது, துள்ளியம்=(2, 2)
+        ).தரவுகளைப்_பெறு(மறை=மறை)
+        xrt.assert_equal(
+            தரவுகள்.coords,
+            xr.Coordinates(
+                {
+                    அகலாங்கு_அச்சு: np.arange(-10, 10, 0.5),
+                    நெட்டாங்கு_அச்சு: np.arange(-20, 20, 0.5),
+                    மண்_ஆழ_அச்சு: ஆழம்,
+                    மண்_மாறி_அச்சு: மாறிகள்,
+                }
+            ),
         )
-    xrt.assert_equal(
-        தரவுகள்.coords,
-        xr.Coordinates(
-            {
-                அகலாங்கு_அச்சு: np.arange(0, 10),
-                நெட்டாங்கு_அச்சு: np.arange(0, 7),
-                மண்_ஆழ_அச்சு: ஆழம்,
-                மண்_மாறி_அச்சு: மாறிகள்
-            }
-        ),
+
+
+def ஓஸிஸ்_ஒற்றுமையைச்_சோதிக்க():
+    class சோதனை_ஓஸிஸ்_மண்_வகைகள்(ஓஸிஸ்_மண்_வகைகள்):
+        def தரவுகளைப்_பெறு(தன், மறை=None):
+            return xr.DataArray(
+                np.random.randint(1, 25, size=40 * 80).reshape((40, 80)),
+                coords={
+                    அகலாங்கு_அச்சு: np.arange(-10, 10, 0.5),
+                    நெட்டாங்கு_அச்சு: np.arange(-20, 20, 0.5),
+                },
+                dims=[அகலாங்கு_அச்சு, நெட்டாங்கு_அச்சு],
+            )
+
+    மறை = xr.DataArray(
+        1,
+        coords={
+            அகலாங்கு_அச்சு: np.arange(0, 10, 0.5),
+            நெட்டாங்கு_அச்சு: np.arange(0, 7, 0.5),
+        },
+        dims=[அகலாங்கு_அச்சு, நெட்டாங்கு_அச்சு],
     )
 
+    with TemporaryDirectory() as தற்காலிகமானது:
+        குறிப்பு = ஒற்றுமைக்_குறிப்பு(காலநிலை=காலநிலை_குறிப்பு(2050))
+        ஒற்றுமை = சோதனை_ஓஸிஸ்_மண்_வகைகள்(
+            தரவு_கோப்புரை=தற்காலிகமானது, துள்ளியம்=(2, 2)
+        ).ஒற்றுமை(0, 0, குறிப்பு, மறை=மறை)
 
-def ஒற்றுமையைச்_சோதிக்க(சுமா_மண்க்கட்டம்):
-    raise NotImplementedError
+        xrt.assert_equal(
+            ஒற்றுமை.coords,
+            xr.Coordinates(
+                {
+                    அகலாங்கு_அச்சு: np.arange(-10, 10, 0.5),
+                    நெட்டாங்கு_அச்சு: np.arange(-20, 20, 0.5),
+                }
+            ),
+        )
+
+        assert ஒற்றுமை.min() == 0
+        assert ஒற்றுமை.max() == 1
+
+        assert bool(ஒற்றுமை.sel({அகலாங்கு_அச்சு: [0], நெட்டாங்கு_அச்சு: [0]}) == 1) is True
+
