@@ -11,12 +11,12 @@ defaults:
 on:
   push:
     branches:
-      - முதன்மை_
+      - முதன்மை
     paths-ignore:
       - '**.md'
   pull_request:
     branches:
-      - முதன்மை_
+      - முதன்மை
     paths-ignore:
         - '**.md'
 
