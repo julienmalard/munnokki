@@ -1,14 +1,17 @@
 import os.path
 import shutil
+from collections.abc import Callable
 from tempfile import NamedTemporaryFile
 from typing import Optional
 from zipfile import ZipFile
 
 import requests
 import rioxarray as _
+import urllib3
 import xarray as xr
 from appdata import AppDataPaths
 from rarfile import RarFile
+from urllib3 import Retry
 
 
 class இயல்பு_தரவு_பாதை:
@@ -81,8 +84,10 @@ class ஜிப்_பதிவிறக்கம்(பதிவிறக்க
         பதிவிறக்க_முகவரி: str,
         தரவு_கோப்புரை: str,
         பெயர்: Optional[str] = None,
+        பின்_பதன்ப்படுத்தல்: Optional[Callable[[xr.Dataset|xr.DataArray], [xr.Dataset | xr.DataArray]]] = None
     ):
         தன்.உள்_கோப்பு_பாதை = உள்_கோப்பு_பாதை
+        தன்.பின்_பதன்ப்படுத்தல் = பின்_பதன்ப்படுத்தல்
 
         super().__init__(
             பெயர்=பெயர், பதிவிறக்க_முகவரி=பதிவிறக்க_முகவரி, தரவு_கோப்புரை=தரவு_கோப்புரை
@@ -90,24 +95,31 @@ class ஜிப்_பதிவிறக்கம்(பதிவிறக்க
 
     @property
     def கோப்பு_பாதை(தன்) -> str:
-        return os.path.join(தன்.தரவு_கோப்புரை, தன்.பெயர், தன்.உள்_கோப்பு_பாதை)
+        return os.path.join(தன்.கோப்புரை_பாதை, தன்.உள்_கோப்பு_பாதை)
 
     @property
     def ஜிப்_பாதை(தன்) -> str:
-        return os.path.join(தன்.தரவு_கோப்புரை, தன்.பெயர்)
+        return os.path.join(str(தன்.தரவு_கோப்புரை), தன்.பெயர்)
 
     @property
     def கோப்புரை_பாதை(தன்) -> str:
-        return os.path.join(தன்.தரவு_கோப்புரை, os.path.splitext(தன்.பெயர்)[0])
+        return os.path.join(str(தன்.தரவு_கோப்புரை), os.path.splitext(தன்.பெயர்)[0])
 
     def பதிவேற்கு(தன்):
         if not os.path.isfile(தன்.கோப்பு_பாதை):
             if not os.path.isfile(தன்.ஜிப்_பாதை):
-                with NamedTemporaryFile() as தற்காலிகமானது:
-                    with requests.get(தன்.பதிவிறக்க_முகவரி, stream=True) as கோரிக்கை:
-                        கோரிக்கை.raise_for_status()
+                வேர்_கோப்புரை_உருவாக்கு(தன்.ஜிப்_பாதை)
+                retry_strategy = Retry(
+                    total=3,  # Max retries
+                    backoff_factor=1,  # Delay between retries (1s, 2s, 4s...)
+                    status_forcelist=[429, 500, 502, 503, 504]  # Retry on these status codes
+                )
+                http = urllib3.PoolManager(retries=retry_strategy)
 
-                        for chunk in கோரிக்கை.iter_content():
+                with NamedTemporaryFile() as தற்காலிகமானது:
+                    with http.request("GET", தன்.பதிவிறக்க_முகவரி, preload_content=False) as பதில்:
+                        for chunk in பதில்.stream():
+
                             if chunk:
                                 தற்காலிகமானது.write(chunk)
 
@@ -119,6 +131,8 @@ class ஜிப்_பதிவிறக்கம்(பதிவிறக்க
             else:
                 with ZipFile(தன்.ஜிப்_பாதை) as ஜிப்:
                     ஜிப்.extractall(தன்.கோப்புரை_பாதை)
+
+            os.remove(தன்.ஜிப்_பாதை)
 
         return தன்.கோப்பு_பாதை
 

@@ -74,7 +74,7 @@ class மண்கட்டம்(மண்):
                 )
                 தரவு_பட்டியல்.append(மாறி_தரவுகள்)
 
-        return xr.merge(தரவு_பட்டியல்)
+        return xr.merge(தரவு_பட்டியல், join="outer")
 
     def தரவு_அடையாளத்தைப்_பெறு(
         தன், மாறி: str, ஆழம்: int | float, மதிப்பு: Literal["mean", "Q05", "Q50", "Q95"]

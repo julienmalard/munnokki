@@ -38,8 +38,9 @@ pythonpath = [
 ]
 
 [tool.coverage.run]
-source = ["src"]
-
+source_dirs = ["src"]
+[tool.coverage.report]
+omit = ["*/**/*.pyx"]
 
 [tool.uv]
 required-environments = [
