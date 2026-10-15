@@ -84,10 +84,8 @@ class ஜிப்_பதிவிறக்கம்(பதிவிறக்க
         பதிவிறக்க_முகவரி: str,
         தரவு_கோப்புரை: str,
         பெயர்: Optional[str] = None,
-        பின்_பதன்ப்படுத்தல்: Optional[Callable[[xr.Dataset|xr.DataArray], [xr.Dataset | xr.DataArray]]] = None
     ):
         தன்.உள்_கோப்பு_பாதை = உள்_கோப்பு_பாதை
-        தன்.பின்_பதன்ப்படுத்தல் = பின்_பதன்ப்படுத்தல்
 
         super().__init__(
             பெயர்=பெயர், பதிவிறக்க_முகவரி=பதிவிறக்க_முகவரி, தரவு_கோப்புரை=தரவு_கோப்புரை
@@ -112,14 +110,21 @@ class ஜிப்_பதிவிறக்கம்(பதிவிறக்க
                 retry_strategy = Retry(
                     total=3,  # Max retries
                     backoff_factor=1,  # Delay between retries (1s, 2s, 4s...)
-                    status_forcelist=[429, 500, 502, 503, 504]  # Retry on these status codes
+                    status_forcelist=[
+                        429,
+                        500,
+                        502,
+                        503,
+                        504,
+                    ],  # Retry on these status codes
                 )
                 http = urllib3.PoolManager(retries=retry_strategy)
 
                 with NamedTemporaryFile() as தற்காலிகமானது:
-                    with http.request("GET", தன்.பதிவிறக்க_முகவரி, preload_content=False) as பதில்:
+                    with http.request(
+                        "GET", தன்.பதிவிறக்க_முகவரி, preload_content=False
+                    ) as பதில்:
                         for chunk in பதில்.stream():
-
                             if chunk:
                                 தற்காலிகமானது.write(chunk)
 

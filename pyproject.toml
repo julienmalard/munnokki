@@ -20,6 +20,7 @@ dependencies = [
     "patool>=4.1.0",
     "pybtex>=0.26.1",
     "pybtexris>=0.2.0",
+    "pytest-urllib3>=0.2.0",
     "rarfile>=4.5",
     "requests>=2.34.2",
     "rioxarray>=0.23.0",

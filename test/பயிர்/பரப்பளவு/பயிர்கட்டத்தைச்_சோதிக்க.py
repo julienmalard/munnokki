@@ -1,112 +1,132 @@
-from urllib.parse import parse_qs
+import io
+import math
+import os
+import zipfile
+from tempfile import TemporaryDirectory
 
 import numpy as np
 import pytest
-import requests as rq
 import xarray as xr
 import xarray.testing as xrt
-from urllib3.util import parse_url
+from pytest_urllib3 import Urllib3Mock
 
 from முன்னோக்கி.அச்சுகள் import அகலாங்கு_அச்சு, நெட்டாங்கு_அச்சு
-from முன்னோக்கி.பயிர்.பயிர்_பெயர்கள் import வாழை, சிறுதானியம்
+from முன்னோக்கி.பயிர்.பயிர்_பெயர்கள் import வாழை, சிறுதானியம், பாதாம், குதிரை_மசால், அகவே, அபாக்கா
 from முன்னோக்கி.பயிர்.பரப்பளவு.பயிர்கட்டம் import பயிர்கட்டம்
 from முன்னோக்கி.பயிர்.மாறிலிகள் import பயிர்_அச்சு
 
+படி = 10
+அகலாங்கு = np.arange(-90, 90 + படி, படி)
+நெட்டாங்கு = np.arange(-180, 180 + படி, படி)
+
 
 @pytest.fixture
-def சுமா_பயிர்க்ட்டம்(requests_mock):
-    def சோதனைத்_தரவுகள்(கோரிக்கை: rq.Request, சூழல்):
-        மாறிகள் = parse_qs(parse_url(கோரிக்கை.url).query)
-        assert "WCS" in மாறிகள்["service"]
-        மாறி = மாறிகள்["map"][0].replace(r"/map/", "").replace(r".map", "")
-        if "GetCapabilities" == மாறிகள்["request"][0]:
-            return HTTPResponse(
-                status=200,
-                reason=http.client.responses.get(200),
-                body=_IOReader(
-                    f'<?xml version=\'1.0\' encoding="UTF-8" standalone="no" ?>\n<WCS_Capabilities\n   version="1.0.0" \n   updateSequence="0" \n   xmlns="http://www.opengis.net/wcs" \n   xmlns:xlink="http://www.w3.org/1999/xlink" \n   xmlns:gml="http://www.opengis.net/gml" \n   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n   xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/wcsCapabilities.xsd">\n<Service>\n  <description>Soilgrids layers provided by ISRIC - World Soil Information</description>\n  <name>MapServer WCS</name>\n<!-- WARNING: Mandatory metadata "wcs_label" or "ows_label" was missing in this context. -->\n  <keywords>\n    <keyword>bulk density</keyword>\n    <keyword>digital soil mapping</keyword>\n    <keyword>Soil science</keyword>\n    <keyword>Global</keyword>\n    <keyword>geoscientificInformation</keyword>\n  </keywords>\n<responsibleParty>\n    <individualName>Luis Calisto</individualName>\n    <organisationName>ISRIC - World Soil Reference</organisationName>\n    <positionName>SDI manager</positionName>\n  <contactInfo>\n    <phone>\n    <voice>+31 317 483 735</voice>\n    <facsimile>+31 317 483 735</facsimile>\n    </phone>\n    <address>\n    <deliveryPoint>Droevendaalsesteeg 3, 6708 PB</deliveryPoint>\n    <city>Wageningen</city>\n    <administrativeArea>Gelderland</administrativeArea>\n    <postalCode>6708PB</postalCode>\n    <country>The Netherlands</country>\n    <electronicMailAddress>soilgrids@isric.org</electronicMailAddress>\n    </address>\n    <onlineResource xlink:type="simple" xlink:href="https://maps.isric.org/"/>\n  </contactInfo>\n</responsibleParty>\n  <fees>None</fees>\n  <accessConstraints>\n    None\n  </accessConstraints>\n</Service>\n<Capability>\n  <Request>\n    <GetCapabilities>\n      <DCPType>\n        <HTTP>\n          <Get><OnlineResource xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;" /></Get>\n        </HTTP>\n      </DCPType>\n      <DCPType>\n        <HTTP>\n          <Post><OnlineResource xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;" /></Post>\n        </HTTP>\n      </DCPType>\n    </GetCapabilities>\n    <DescribeCoverage>\n      <DCPType>\n        <HTTP>\n          <Get><OnlineResource xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;" /></Get>\n        </HTTP>\n      </DCPType>\n      <DCPType>\n        <HTTP>\n          <Post><OnlineResource xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;" /></Post>\n        </HTTP>\n      </DCPType>\n    </DescribeCoverage>\n    <GetCoverage>\n      <DCPType>\n        <HTTP>\n          <Get><OnlineResource xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;" /></Get>\n        </HTTP>\n      </DCPType>\n      <DCPType>\n        <HTTP>\n          <Post><OnlineResource xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;" /></Post>\n        </HTTP>\n      </DCPType>\n    </GetCoverage>\n  </Request>\n  <Exception>\n    <Format>application/vnd.ogc.se_xml</Format>\n  </Exception>\n</Capability>\n<ContentMetadata>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_0-5cm_Q0.5"/>    <name>{மாறி}_0-5cm_Q0.5</name>\n    <label>{மாறி}_0-5cm_Q0.5</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_0-5cm_Q0.05"/>    <name>{மாறி}_0-5cm_Q0.05</name>\n    <label>{மாறி}_0-5cm_Q0.05</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_0-5cm_Q0.95"/>    <name>{மாறி}_0-5cm_Q0.95</name>\n    <label>{மாறி}_0-5cm_Q0.95</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_0-5cm_mean"/>    <name>{மாறி}_0-5cm_mean</name>\n    <label>{மாறி}_0-5cm_mean</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_0-5cm_uncertainty"/>    <name>{மாறி}_0-5cm_uncertainty</name>\n    <label>{மாறி}_0-5cm_uncertainty</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_5-15cm_Q0.5"/>    <name>{மாறி}_5-15cm_Q0.5</name>\n    <label>{மாறி}_5-15cm_Q0.5</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_5-15cm_Q0.05"/>    <name>{மாறி}_5-15cm_Q0.05</name>\n    <label>{மாறி}_5-15cm_Q0.05</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_5-15cm_Q0.95"/>    <name>{மாறி}_5-15cm_Q0.95</name>\n    <label>{மாறி}_5-15cm_Q0.95</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_5-15cm_mean"/>    <name>{மாறி}_5-15cm_mean</name>\n    <label>{மாறி}_5-15cm_mean</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_5-15cm_uncertainty"/>    <name>{மாறி}_5-15cm_uncertainty</name>\n    <label>{மாறி}_5-15cm_uncertainty</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_15-30cm_Q0.5"/>    <name>{மாறி}_15-30cm_Q0.5</name>\n    <label>{மாறி}_15-30cm_Q0.5</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_15-30cm_Q0.05"/>    <name>{மாறி}_15-30cm_Q0.05</name>\n    <label>{மாறி}_15-30cm_Q0.05</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_15-30cm_Q0.95"/>    <name>{மாறி}_15-30cm_Q0.95</name>\n    <label>{மாறி}_15-30cm_Q0.95</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_15-30cm_mean"/>    <name>{மாறி}_15-30cm_mean</name>\n    <label>{மாறி}_15-30cm_mean</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_15-30cm_uncertainty"/>    <name>{மாறி}_15-30cm_uncertainty</name>\n    <label>{மாறி}_15-30cm_uncertainty</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_30-60cm_Q0.05"/>    <name>{மாறி}_30-60cm_Q0.05</name>\n    <label>{மாறி}_30-60cm_Q0.05</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_30-60cm_Q0.5"/>    <name>{மாறி}_30-60cm_Q0.5</name>\n    <label>{மாறி}_30-60cm_Q0.5</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_30-60cm_Q0.95"/>    <name>{மாறி}_30-60cm_Q0.95</name>\n    <label>{மாறி}_30-60cm_Q0.95</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_30-60cm_mean"/>    <name>{மாறி}_30-60cm_mean</name>\n    <label>{மாறி}_30-60cm_mean</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_30-60cm_uncertainty"/>    <name>{மாறி}_30-60cm_uncertainty</name>\n    <label>{மாறி}_30-60cm_uncertainty</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_60-100cm_Q0.05"/>    <name>{மாறி}_60-100cm_Q0.05</name>\n    <label>{மாறி}_60-100cm_Q0.05</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_60-100cm_Q0.5"/>    <name>{மாறி}_60-100cm_Q0.5</name>\n    <label>{மாறி}_60-100cm_Q0.5</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_60-100cm_Q0.95"/>    <name>{மாறி}_60-100cm_Q0.95</name>\n    <label>{மாறி}_60-100cm_Q0.95</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_60-100cm_mean"/>    <name>{மாறி}_60-100cm_mean</name>\n    <label>{மாறி}_60-100cm_mean</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_60-100cm_uncertainty"/>    <name>{மாறி}_60-100cm_uncertainty</name>\n    <label>{மாறி}_60-100cm_uncertainty</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_100-200cm_Q0.05"/>    <name>{மாறி}_100-200cm_Q0.05</name>\n    <label>{மாறி}_100-200cm_Q0.05</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_100-200cm_Q0.5"/>    <name>{மாறி}_100-200cm_Q0.5</name>\n    <label>{மாறி}_100-200cm_Q0.5</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_100-200cm_Q0.95"/>    <name>{மாறி}_100-200cm_Q0.95</name>\n    <label>{மாறி}_100-200cm_Q0.95</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_100-200cm_mean"/>    <name>{மாறி}_100-200cm_mean</name>\n    <label>{மாறி}_100-200cm_mean</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n  <CoverageOfferingBrief>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_100-200cm_uncertainty"/>    <name>{மாறி}_100-200cm_uncertainty</name>\n    <label>{மாறி}_100-200cm_uncertainty</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n  </CoverageOfferingBrief>\n</ContentMetadata>\n</WCS_Capabilities>\n'.encode(
-                        "utf-8"
-                    )
-                ),
-                decode_content=False,
-                enforce_content_length=False,
-                preload_content=False,
-                original_response=None,
-            )
-        elif "DescribeCoverage" == மாறிகள்["request"][0]:
-            return HTTPResponse(
-                status=200,
-                reason=http.client.responses.get(200),
-                body=_IOReader(
-                    '<?xml version=\'1.0\' encoding="UTF-8" ?>\n<CoverageDescription\n   version="1.0.0" \n   updateSequence="0" \n   xmlns="http://www.opengis.net/wcs" \n   xmlns:xlink="http://www.w3.org/1999/xlink" \n   xmlns:gml="http://www.opengis.net/gml" \n   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n   xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/describeCoverage.xsd">\n  <CoverageOffering>\n  <metadataLink metadataType="TC211" xlink:type="simple" xlink:href="https://maps.isric.org/mapserv?map=/map/{மாறி}.map&amp;request=GetMetadata&amp;layer={மாறி}_0-5cm_mean"/>  <name>{மாறி}_0-5cm_mean</name>\n  <label>{மாறி}_0-5cm_mean</label>\n    <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">\n      <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n      <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n    </lonLatEnvelope>\n  <keywords>\n    <keyword></keyword>\n  </keywords>\n    <domainSet>\n      <spatialDomain>\n        <gml:Envelope srsName="EPSG:4326">\n          <gml:pos>-179.991347553068 -55.9773009202418</gml:pos>\n          <gml:pos>179.994461880094 82.7192840534453</gml:pos>\n        </gml:Envelope>\n        <gml:Envelope srsName="EPSG:152160">\n          <gml:pos>-19949000 -6147500</gml:pos>\n          <gml:pos>19861750 8361000</gml:pos>\n        </gml:Envelope>\n        <gml:RectifiedGrid dimension="2">\n          <gml:limits>\n            <gml:GridEnvelope>\n              <gml:low>0 0</gml:low>\n              <gml:high>159242 58033</gml:high>\n            </gml:GridEnvelope>\n          </gml:limits>\n          <gml:axisName>x</gml:axisName>\n          <gml:axisName>y</gml:axisName>\n          <gml:origin>\n            <gml:pos>-19949000 8361000</gml:pos>\n          </gml:origin>\n          <gml:offsetVector>250 0</gml:offsetVector>\n          <gml:offsetVector>0 -250</gml:offsetVector>\n        </gml:RectifiedGrid>\n      </spatialDomain>\n    </domainSet>\n    <rangeSet>\n      <RangeSet>\n        <name>range1</name>\n        <label>label1</label>\n        <nullValues>\n          <singleValue>-32768</singleValue>\n        </nullValues>\n      </RangeSet>\n    </rangeSet>\n    <supportedCRSs>\n      <requestResponseCRSs>EPSG:152160</requestResponseCRSs>\n      <requestResponseCRSs>EPSG:4326</requestResponseCRSs>\n      <requestResponseCRSs>EPSG:3857</requestResponseCRSs>\n      <requestResponseCRSs>EPSG:54012</requestResponseCRSs>\n      <nativeCRSs>EPSG:152160</nativeCRSs>\n    </supportedCRSs>\n    <supportedFormats>\n      <formats>GEOTIFF_INT16</formats>\n    </supportedFormats>\n    <supportedInterpolations default="nearest neighbor">\n      <interpolationMethod>nearest neighbor</interpolationMethod>\n      <interpolationMethod>bilinear</interpolationMethod>\n    </supportedInterpolations>\n  </CoverageOffering>\n</CoverageDescription>\n'.encode(
-                        "utf-8"
-                    )
-                ),
-                decode_content=False,
-                enforce_content_length=False,
-                preload_content=False,
-                original_response=None,
-            )
-        elif "GetCoverage" == மாறிகள்["request"][0]:
-            அளவுகள் = [float(இ) for இ in மாறிகள்["BBox"][0].split(",")]
-            அகலம் = float(மாறிகள்["width"][0])
-            உயரம் = float(மாறிகள்["height"][0])
-            அகல_படி = (அளவுகள்[2] - அளவுகள்[0]) / அகலம்
-            உயர_படி = (அளவுகள்[3] - அளவுகள்[1]) / உயரம்
-            நெட்டாங்கு = np.arange(அளவுகள்[0], அளவுகள்[2], அகல_படி)
-            அகலாங்கு = np.arange(அளவுகள்[1], அளவுகள்[3], உயர_படி)
+def சுமா_பயிர்க்ட்டம்( urllib3_mock: Urllib3Mock):
+    # எல்லா பயிர்கள் வேண்டாம், இதுவே போதும்...
+    பெயர்_சமானம் = பயிர்கட்டம்.பெயர்_சமானம்
+    பயிர்கட்டம்.பெயர்_சமானம் = {
+        "abaca": அபாக்கா,
+        "agave": அகவே,
+        "alfalfa": குதிரை_மசால்,
+        "almond": பாதாம்,
+        "வாழை": வாழை,
+        "சிறுதானியம்": சிறுதானியம்,
+    }
+    நினைவகத்தில்_ஜிப் = io.BytesIO()
 
-            தரவுகள் = xr.DataArray(
-                np.random.random(நெட்டாங்கு.size * அகலாங்கு.size).reshape(
-                    (1, நெட்டாங்கு.size, அகலாங்கு.size, 1)
-                ),
-                coords={
-                    "band": [1],
-                    "x": நெட்டாங்கு,
-                    "y": அகலாங்கு,
-                    "spatial_ref": 0,
+    ஆயக்கூறுகள் = {
+        "lat": அகலாங்கு,
+        "lon": நெட்டாங்கு,
+    }
+    வடிவம் = [ஆய.size for ஆய in ஆயக்கூறுகள்.values()]
+    திறன் = np.random.random(math.prod(வடிவம்)).reshape(வடிவம்)
+
+    with zipfile.ZipFile(நினைவகத்தில்_ஜிப், "w") as ஜிப்கோப்பு:
+        for பயிர் in பயிர்கட்டம்.பெயர்_சமானம்:
+            கோப்பு_பெயர் = os.path.join(
+                "CROPGRIDSv1.08_NC_maps", f"CROPGRIDSv1.08_{பயிர்}.nc"
+            )
+
+            def மாறி_தரவுகள்(மாறி: str):
+                if மாறி == "qual":
+                    return திறன்
+                elif மாறி == "set":
+                    return np.random.randint(1, 6, size=math.prod(வடிவம்)).reshape(வடிவம்)
+                else:
+                    return (np.random.random(math.prod(வடிவம்)) * 1000).round().reshape(வடிவம்)
+
+            தரவுகள் = xr.Dataset(
+                {
+                    மாறி: xr.DataArray(
+                        மாறி_தரவுகள்(மாறி),
+                        coords=ஆயக்கூறுகள்,
+                        dims=ஆயக்கூறுகள்.keys(),
+                        name=மாறி,
+                    )
+                    for மாறி in ["harvarea", "croparea", "qual", "set"]
                 },
-                dims=("band", "y", "x", "spatial_ref"),
-                attrs={"_FillValue": -32768},
+                coords=ஆயக்கூறுகள்,
+                attrs={
+                    "Creation date": "10-Mar-2024 09:19:38",
+                    "Authors": "F. Maggi, F.H.M. Tang, T.H. Nguyen",
+                    "Version": "v1.08",
+                },
             )
-            with MemoryFile() as memfile:
-                தரவுகள்.squeeze().rio.to_raster(memfile.name)
-                return HTTPResponse(
-                    status=200,
-                    reason=http.client.responses.get(200),
-                    body=_IOReader(memfile.read()),
-                    decode_content=False,
-                    enforce_content_length=False,
-                    preload_content=False,
-                    original_response=None,
-                    headers={"Content-Type": "tiff"},
-                )
+            ஜிப்கோப்பு.writestr(கோப்பு_பெயர், தரவுகள்.to_netcdf())
 
-        return HTTPResponse(status=404)
+    urllib3_mock.add_response(
+        url="https://api.figshare.com/v2/file/download/44950942",
+        content=நினைவகத்தில்_ஜிப்.getvalue(),
+    )
+    yield {"திறன்": திறன்}
 
-    requests_mock.get("https://figshare.com/ndownloader/articles/22491997/versions/9", raw=சோதனைத்_தரவுகள்)
+    பயிர்கட்டம்.பெயர்_சமானம் = பெயர்_சமானம்
 
 
-def தரவுகளைப்_பெறு_சோதிக்க():
-    தரவுகள் = பயிர்கட்டம்().தரவுகளைப்_பெறு()
+def தரவுகளைப்_பெறு_சோதிக்க(சுமா_பயிர்க்ட்டம்):
+    with TemporaryDirectory() as தற்காலிகமானது:
 
-    xrt.assert_equal(தரவுகள்.coords, xr.DataArray(coords={
-        அகலாங்கு_அச்சு: np.arange(-89.975, 89.975+0.05, 0.05).astype(தரவுகள்.coords.dtypes[அகலாங்கு_அச்சு]),
-        நெட்டாங்கு_அச்சு: np.arange(-179.975, 179.975+0.05, 0.05).astype(தரவுகள்.coords.dtypes[நெட்டாங்கு_அச்சு]),
-        பயிர்_அச்சு: sorted([*பயிர்கட்டம்.பெயர்_சமானம்.values()])
-    }, dims=[அகலாங்கு_அச்சு, நெட்டாங்கு_அச்சு, பயிர்_அச்சு]).coords)
+        தரவுகள் = பயிர்கட்டம்(தரவு_கோப்புரை=தற்காலிகமானது).தரவுகளைப்_பெறு()
 
-def குறிப்பிட்ட_பயிர்களுடன்_தரவுகளைப்_பெறு_சோதிக்க():
-    தரவுகள் = பயிர்கட்டம்().தரவுகளைப்_பெறு(பயிர்கள்=[வாழை, சிறுதானியம்])
+    xrt.assert_equal(
+        தரவுகள்.coords,
+        xr.DataArray(
+            coords={
+                அகலாங்கு_அச்சு: அகலாங்கு,
+                நெட்டாங்கு_அச்சு: நெட்டாங்கு,
+                பயிர்_அச்சு: sorted([*பயிர்கட்டம்.பெயர்_சமானம்.values()]),
+            },
+            dims=[அகலாங்கு_அச்சு, நெட்டாங்கு_அச்சு, பயிர்_அச்சு],
+        ).coords,
+    )
 
-    xrt.assert_equal(தரவுகள்.coords, xr.DataArray(coords={
-        அகலாங்கு_அச்சு: np.arange(-89.975, 89.975+0.05, 0.05).astype(தரவுகள்.coords.dtypes[அகலாங்கு_அச்சு]),
-        நெட்டாங்கு_அச்சு: np.arange(-179.975, 179.975+0.05, 0.05).astype(தரவுகள்.coords.dtypes[நெட்டாங்கு_அச்சு]),
-        பயிர்_அச்சு: sorted([வாழை, சிறுதானியம்])
-    }, dims=[அகலாங்கு_அச்சு, நெட்டாங்கு_அச்சு, பயிர்_அச்சு]).coords)
+
+def குறிப்பிட்ட_பயிர்களுடன்_தரவுகளைப்_பெறு_சோதிக்க(சுமா_பயிர்க்ட்டம்):
+    with TemporaryDirectory() as தற்காலிகமானது:
+        தரவுகள் = பயிர்கட்டம்(தரவு_கோப்புரை=தற்காலிகமானது).தரவுகளைப்_பெறு(
+            பயிர்கள்=[வாழை, சிறுதானியம்]
+        )
+
+    xrt.assert_equal(
+        தரவுகள்.coords,
+        xr.DataArray(
+            coords={
+                அகலாங்கு_அச்சு: அகலாங்கு,
+                நெட்டாங்கு_அச்சு: நெட்டாங்கு,
+                பயிர்_அச்சு: sorted([வாழை, சிறுதானியம்]),
+            },
+            dims=[அகலாங்கு_அச்சு, நெட்டாங்கு_அச்சு, பயிர்_அச்சு],
+        ).coords,
+    )
+
 
 def தரவு_திறன்_வடிக்கட்டியுடன்_தரவுகளைப்_பெறு_சோதிக்க(சுமா_பயிர்க்ட்டம்):
-    pass
+    with TemporaryDirectory() as தற்காலிகமானது:
+        தரவுகள் = பயிர்கட்டம்(தரவு_கோப்புரை=தற்காலிகமானது, தரவு_திறன்=0.5).தரவுகளைப்_பெறு(
+            பயிர்கள்=[வாழை, சிறுதானியம்]
+        )
+    assert xr.where(சுமா_பயிர்க்ட்டம்["திறன்"] < 0.5, தரவுகள், np.nan).isnull().all().compute().values == True
+    assert xr.where(சுமா_பயிர்க்ட்டம்["திறன்"] >= 0.5, தரவுகள், 1).notnull().all().compute().values == True
 
 
 def மேற்கோள்களைச்_சோதிக்க():

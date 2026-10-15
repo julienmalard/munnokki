@@ -908,6 +908,7 @@ dependencies = [
     { name = "patool" },
     { name = "pybtex" },
     { name = "pybtexris" },
+    { name = "pytest-urllib3" },
     { name = "rarfile" },
     { name = "requests" },
     { name = "rioxarray" },
@@ -946,6 +947,7 @@ requires-dist = [
     { name = "patool", specifier = ">=4.1.0" },
     { name = "pybtex", specifier = ">=0.26.1" },
     { name = "pybtexris", specifier = ">=0.2.0" },
+    { name = "pytest-urllib3", specifier = ">=0.2.0" },
     { name = "rarfile", specifier = ">=4.5" },
     { name = "requests", specifier = ">=2.34.2" },
     { name = "rioxarray", specifier = ">=0.23.0" },
@@ -1395,6 +1397,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/7a/7f/6ed29931d5c8cd396e7c0a55412e6cc88020373365c8685985dea53d26d7/pytest_mock-3.16.0.tar.gz", hash = "sha256:5a8395528b8f498205f3718f575228d0edaed7425fff638f87d1a6c3e0383636", size = 35362, upload-time = "2026-09-27T14:57:55.46Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/db/5b/b83a9bf1a3b4ec222f9fa083147ff6816245223da0ab92370e7e056f113f/pytest_mock-3.16.0-py3-none-any.whl", hash = "sha256:007cfeb257801d88d9c0b2a7b5a15a15e73b71968dfd72e7bf8c4a2f8393aec8", size = 10016, upload-time = "2026-09-27T14:57:54.283Z" },
+]
+
+[[package]]
+name = "pytest-urllib3"
+version = "0.2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b0/f6/1674ea24af48ec944c484613142594e0c660b881823e3a31a9154d89ff2f/pytest_urllib3-0.2.0.tar.gz", hash = "sha256:f8eaf5b70ab05d9459bec4f70f1363f6a64ed9145f8cacec142299620006c3c7", size = 12755, upload-time = "2026-03-09T12:11:56.439Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0e/06/694fb100b5d458c34951204fb038340af8d1ad84899893d47294c1d49fd2/pytest_urllib3-0.2.0-py3-none-any.whl", hash = "sha256:0f46e4cb14c19898bb98ded223bfc9dc9fe0c045a9dbcbcf1f7779e290e602d0", size = 15079, upload-time = "2026-03-09T12:11:57.411Z" },
 ]
 
 [[package]]
