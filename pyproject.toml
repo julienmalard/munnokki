@@ -15,7 +15,7 @@ dependencies = [
     "h5netcdf>=1.8.1",
     "h5py>=3.16.0",
     "matplotlib>=3.11.2",
-    "numpy>=2.5.3",
+    "numpy>=2.5.4",
     "owslib>=0.36.0",
     "patool>=4.1.0",
     "pybtex>=0.26.1",
@@ -25,7 +25,7 @@ dependencies = [
     "rioxarray>=0.23.0",
     "scipy>=1.18.1",
     "soilgrids>=0.1.5",
-    "xarray>=2026.7.0",
+    "xarray>=2026.9.0",
     "xarray-regrid>=0.4.2",
 ]
 
@@ -54,7 +54,7 @@ dev = [
     "coverage>=7.16.2",
     "twine>=7.0.0",
     "requests-mock>=1.12.1",
-    "rasterio>=1.5.1",
+    "rasterio>=1.5.2",
     "urllib3>=2.8.0",
     "pytest-mock>=3.16.0",
 ]
