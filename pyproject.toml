@@ -40,8 +40,12 @@ pythonpath = [
 
 [tool.coverage.run]
 source_dirs = ["src"]
+
 [tool.coverage.report]
 omit = ["*/**/*.pyx"]
+exclude_also = [
+    "@(abc\\.)?abstractmethod",
+]
 
 [tool.uv]
 required-environments = [
