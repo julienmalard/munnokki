@@ -36,4 +36,16 @@ class பயிர்_பரப்பளவு(தாள், ABC):
             method="nearest",
         )
 
-        return xr.where(தரவுகள்.sel({பயிர்_அச்சு: புள்ளி.where(புள்ளி > 0).dropna(பயிர்_அச்சு).coords[பயிர்_அச்சு].values}) > 0, 1, 0)
+        return xr.where(
+            தரவுகள்.sel(
+                {
+                    பயிர்_அச்சு: புள்ளி.where(புள்ளி > 0)
+                    .dropna(பயிர்_அச்சு)
+                    .coords[பயிர்_அச்சு]
+                    .values
+                }
+            )
+            > 0,
+            1,
+            0,
+        )
