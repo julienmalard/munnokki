@@ -14,13 +14,13 @@ class பயிர்_பரப்பளவு(தாள், ABC):
     def தரவுகளைப்_பெறு(தன், பயிர்கள்: Optional[str | list[str]] = None) -> xr.DataArray:
         pass
 
-    def இருக்கும்_பயிர்கள்(தன், அகலாங்கு: Number, நெட்டாங்கு: Number) -> list[str]:
+    def இருக்கும்_பயிர்கள்(தன், அகலாங்கு: Number, நெட்டாங்கு: Number) -> set[str]:
         தரவுகள் = தன்.தரவுகளைப்_பெறு()
         புள்ளி = தரவுகள்.sel(
             **{அகலாங்கு_அச்சு: அகலாங்கு, நெட்டாங்கு_அச்சு: நெட்டாங்கு},
             method="nearest",
         )
-        return புள்ளி.coords[பயிர்_அச்சு].where(புள்ளி > 0).values
+        return {*புள்ளி.coords[பயிர்_அச்சு].where(புள்ளி > 0).dropna(பயிர்_அச்சு).values}
 
     def ஒற்றுமை(
         தன்,
@@ -36,7 +36,4 @@ class பயிர்_பரப்பளவு(தாள், ABC):
             method="nearest",
         )
 
-        if புள்ளி < 0:
-            return xr.DataArray(0, coords=தரவுகள்.coords, dims=தரவுகள்.dims)
-        else:
-            return xr.where(தரவுகள் > 0, 1, 0)
+        return xr.where(தரவுகள்.sel({பயிர்_அச்சு: புள்ளி.where(புள்ளி > 0).dropna(பயிர்_அச்சு).coords[பயிர்_அச்சு].values}) > 0, 1, 0)

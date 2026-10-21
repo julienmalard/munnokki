@@ -21,7 +21,7 @@ from முன்னோக்கி.பயிர்.மாறிலிகள் 
 
 
 @pytest.fixture
-def சுமா_பயிர்க்ட்டம்( urllib3_mock: Urllib3Mock):
+def சுமா_பயிர்க்ட்டம்(urllib3_mock: Urllib3Mock):
     # எல்லா பயிர்கள் வேண்டாம், இதுவே போதும்...
     பெயர்_சமானம் = பயிர்கட்டம்.பெயர்_சமானம்
     பயிர்கட்டம்.பெயர்_சமானம் = {
@@ -53,7 +53,11 @@ def சுமா_பயிர்க்ட்டம்( urllib3_mock: Urllib3Mock
                 elif மாறி == "set":
                     return np.random.randint(1, 6, size=math.prod(வடிவம்)).reshape(வடிவம்)
                 else:
-                    return (np.random.random(math.prod(வடிவம்)) * 1000).round().reshape(வடிவம்)
+                    return (
+                        (np.random.random(math.prod(வடிவம்)) * 1000)
+                        .round()
+                        .reshape(வடிவம்)
+                    )
 
             தரவுகள் = xr.Dataset(
                 {
@@ -85,7 +89,6 @@ def சுமா_பயிர்க்ட்டம்( urllib3_mock: Urllib3Mock
 
 def தரவுகளைப்_பெறு_சோதிக்க(சுமா_பயிர்க்ட்டம்):
     with TemporaryDirectory() as தற்காலிகமானது:
-
         தரவுகள் = பயிர்கட்டம்(தரவு_கோப்புரை=தற்காலிகமானது).தரவுகளைப்_பெறு()
 
     xrt.assert_equal(
@@ -125,8 +128,22 @@ def தரவு_திறன்_வடிக்கட்டியுடன்_�
         தரவுகள் = பயிர்கட்டம்(தரவு_கோப்புரை=தற்காலிகமானது, தரவு_திறன்=0.5).தரவுகளைப்_பெறு(
             பயிர்கள்=[வாழை, சிறுதானியம்]
         )
-    assert xr.where(சுமா_பயிர்க்ட்டம்["திறன்"] < 0.5, தரவுகள், np.nan).isnull().all().compute().values == True
-    assert xr.where(சுமா_பயிர்க்ட்டம்["திறன்"] >= 0.5, தரவுகள், 1).notnull().all().compute().values == True
+    assert (
+        xr.where(சுமா_பயிர்க்ட்டம்["திறன்"] < 0.5, தரவுகள், np.nan)
+        .isnull()
+        .all()
+        .compute()
+        .values
+        == True
+    )
+    assert (
+        xr.where(சுமா_பயிர்க்ட்டம்["திறன்"] >= 0.5, தரவுகள், 1)
+        .notnull()
+        .all()
+        .compute()
+        .values
+        == True
+    )
 
 
 def மேற்கோள்களைச்_சோதிக்க():
